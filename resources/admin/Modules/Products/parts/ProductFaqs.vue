@@ -92,7 +92,7 @@ watch(
           {{ translate('Add answers to the most common product questions.') }}
         </p>
       </div>
-      <el-button type="primary" size="small" @click="addFaq">
+      <el-button type="primary" size="small" native-type="button" @click.prevent="addFaq">
         {{ translate('Add FAQ') }}
       </el-button>
     </div>
@@ -107,7 +107,7 @@ watch(
             <span class="fct-product-faqs-admin-item-title">
               {{ translate('FAQ %s', index + 1) }}
             </span>
-            <el-button type="danger" text @click="removeFaq(index)">
+            <el-button type="danger" text native-type="button" @click.prevent="removeFaq(index)">
               <DynamicIcon name="Delete"/>
               {{ translate('Remove') }}
             </el-button>
