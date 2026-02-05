@@ -154,6 +154,11 @@ class CheckoutApi
         $shippingTax = (int) Arr::get($cart->checkout_data, 'tax_data.shipping_tax', 0);
         $taxBehavior = apply_filters('fluent_cart/cart/tax_behavior', 0, ['cart' => $cart]);
 
+        $checkoutNoteLabel = CartHelper::getCheckoutNoteLabel(
+            $cart->cart_data ?? [],
+            __('Leave a Note', 'fluent-cart')
+        );
+
         $checkoutProcessor = new CheckoutProcessor($cartCheckoutHelper->getItems(), [
             'customer_id' => $customer->id,
             'user_tz' => $userTz,
@@ -171,6 +176,7 @@ class CheckoutApi
             'manual_discount_total' => $cartCheckoutHelper->getManualDiscountAmount(),
             'ip_address' => AddressHelper::getIpAddress(),
             'note' => Arr::get($orderData, 'others.order_notes', ''),
+            'checkout_note_label' => $checkoutNoteLabel,
             'tax_id' => Arr::get($validatedData, 'billing_tax_id', 0),
         ]);
 

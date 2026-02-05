@@ -179,6 +179,21 @@
                 <div v-if="sectionParts.after_summary" v-html="sectionParts.after_summary"></div>
             </article>
 
+            <article v-if="order.note" class="fct-single-order-box" role="region" aria-labelledby="order-note-title">
+                <header class="fct-single-order-header">
+                    <h2 id="order-note-title" class="title">
+                        {{ order?.config?.checkout_note_label || $t('Leave a Note') }}
+                    </h2>
+                </header>
+                <div class="fct-single-order-body">
+                    <div class="fct-single-order-box-inner">
+                        <div class="fct-customer-dashboard-content-table-item border-0 pb-0">
+                            <div class="text">{{ order.note }}</div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
             <article v-if="order.subscriptions && order.subscriptions.length && order.payment_status !=='pending'" class="fct-single-order-box" role="region" aria-labelledby="subscription-title">
                 <header class="fct-single-order-header">
                     <h2 id="subscription-title" class="title">{{ $t('Subscription Plan') }}</h2>

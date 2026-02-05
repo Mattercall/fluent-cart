@@ -11,7 +11,8 @@ const props = defineProps({
 const defaultOtherInfo = {
     use_pricing_table: 'no',
     group_pricing_by: 'payment_type',
-    sold_individually: 'no'
+    sold_individually: 'no',
+    checkout_note_label: ''
 };
 
 watch(
