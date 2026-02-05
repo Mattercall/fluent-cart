@@ -679,7 +679,8 @@ class ProductEditModel extends ProductBaseModel {
             'use_pricing_table',
             'active_editor',
             'sold_individually',
-            'checkout_note_label'
+            'checkout_note_label',
+            'promotional_sections'
         ].includes(name)) {
 
             this.ensureVariationIndex(0);

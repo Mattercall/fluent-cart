@@ -10,6 +10,7 @@ import ProductInventory from "@/Modules/Products/parts/ProductInventory.vue";
 import ProductDownload from "@/Modules/Products/parts/DownloadableFiles/ProductDownload.vue";
 import ProductStatus from "@/Modules/Products/parts/ProductStatus.vue";
 import ProductMedia from "@/Modules/Products/parts/ProductMedia.vue";
+import ProductPromotionalSections from "@/Modules/Products/parts/ProductPromotionalSections.vue";
 import ProductTermTaxonomy from "@/Modules/Products/parts/ProductTermTaxonomy.vue";
 import {useProductDownloadableModel} from "@/Models/Product/ProductDownloadableModel";
 import ShippingClass from "@/Modules/Products/parts/ShippingClass.vue";
@@ -222,6 +223,11 @@ onBeforeRouteLeave(() => {
               :product="editableProduct"
               :productEditModel="productEditModel"
               :reload="reload"
+          />
+
+          <product-promotional-sections
+              :product="editableProduct"
+              :productEditModel="productEditModel"
           />
           <div
               class="fct-show-on-tablet fct-product-publish-and-media-widgets el-form el-form--default el-form--label-top">
