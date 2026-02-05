@@ -198,6 +198,9 @@ class ProductUpdateRequest extends RequestGuard
                 return $this->validateTaxClassId($attribute, $value);
             }],
             'detail.other_info.active_editor'     => 'nullable|sanitizeText',
+            'detail.other_info.faqs'              => 'nullable|array',
+            'detail.other_info.faqs.*.question'   => 'nullable|sanitizeText|maxLength:200',
+            'detail.other_info.faqs.*.answer'     => 'nullable|sanitizeTextArea',
             'product_terms'                       => 'nullable|array',
             'product_terms.*'                     => 'nullable|array',
             'product_terms.*.*'                   => 'nullable|numeric',
@@ -376,11 +379,20 @@ class ProductUpdateRequest extends RequestGuard
                 'detail.other_info.shipping_class'    => 'intval',
                 'detail.other_info.tax_class'         => 'intval',
                 'detail.other_info.active_editor'     => 'sanitize_text_field',
+                'detail.other_info.faqs'              => function ($value) { return is_array($value) ? $value : []; },
             ];
 
             foreach ($detailFieldMap as $field => $sanitizer) {
                 if (Arr::has($data, $field)) {
                     $sanitizers[$field] = $sanitizer;
+                }
+            }
+
+            $faqs = Arr::get($data, 'detail.other_info.faqs');
+            if (is_array($faqs)) {
+                foreach ($faqs as $index => $faq) {
+                    $sanitizers["detail.other_info.faqs.$index.question"] = 'sanitize_text_field';
+                    $sanitizers["detail.other_info.faqs.$index.answer"] = 'sanitize_textarea_field';
                 }
             }
         }
