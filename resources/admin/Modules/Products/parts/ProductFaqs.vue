@@ -5,9 +5,14 @@ import DynamicIcon from "@/Bits/Components/Icons/DynamicIcon.vue";
 import translate from "@/utils/translator/Translator";
 
 const props = defineProps({
-  product: Object,
+  modelValue: {
+    type: Array,
+    default: () => []
+  },
   productEditModel: Object
 });
+
+const emit = defineEmits(['update:modelValue']);
 
 const triggerChange = inject('triggerChange');
 
@@ -37,13 +42,14 @@ const serializeFaqs = () => {
 };
 
 const syncFaqs = () => {
-  if (!props.product || !props.productEditModel) {
-    return;
-  }
-
   const sanitizedFaqs = serializeFaqs();
-  props.productEditModel.onChangeInputField('faqs', sanitizedFaqs);
-  triggerChange?.();
+
+  emit('update:modelValue', sanitizedFaqs);
+
+  if (props.productEditModel) {
+    props.productEditModel.onChangeInputField('faqs', sanitizedFaqs);
+    triggerChange?.();
+  }
 };
 
 const addFaq = () => {
@@ -59,7 +65,7 @@ const removeFaq = (index) => {
 };
 
 watch(
-    () => props.product?.faqs,
+    () => props.modelValue,
     async (value) => {
       isSyncing.value = true;
       faqs.value = buildFaqs(value);
