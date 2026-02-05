@@ -259,7 +259,7 @@ onBeforeRouteLeave(() => {
           />
 
           <product-faqs
-              v-model="editableProduct.faqs"
+              :product="editableProduct"
               :productEditModel="productEditModel"
           />
         </div>
