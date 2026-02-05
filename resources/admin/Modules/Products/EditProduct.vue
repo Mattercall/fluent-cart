@@ -21,6 +21,7 @@ import useKeyboardShortcuts from "@/utils/KeyboardShortcut";
 import {onBeforeRouteLeave} from "vue-router";
 import {inject} from 'vue'
 import ProductBundleSelector from "@/Modules/Products/parts/ProductBundleSelector.vue";
+import ProductFaqs from "@/Modules/Products/parts/ProductFaqs.vue";
 
 const props = defineProps({
   product: Object,
@@ -254,6 +255,11 @@ onBeforeRouteLeave(() => {
               :product="editableProduct"
               :productEditModel="productEditModel"
               :productDownloadableModel="productDownloadableModel"
+          />
+
+          <ProductFaqs
+              :product="editableProduct"
+              :productEditModel="productEditModel"
           />
         </div>
         <div class="fct-product-aside">

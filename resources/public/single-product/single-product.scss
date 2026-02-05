@@ -434,6 +434,36 @@
   @apply grid grid-cols-2 gap-3 mt-7.5;
 }
 
+/*=== FAQs ===*/
+.fct-single-product-faqs {
+  @apply mt-8 pt-6 border-t border-solid border-[var(--fct-single-product-border-color)];
+}
+
+.fct-single-product-faqs-title {
+  @apply text-lg font-semibold text-[var(--fct-single-product-primary-text-color)] mb-4;
+}
+
+.fct-single-product-faqs-item {
+  @apply border border-solid border-[var(--fct-single-product-border-color)] rounded mb-3 overflow-hidden;
+
+  summary {
+    @apply cursor-pointer px-4 py-3 font-medium text-[var(--fct-single-product-primary-text-color)];
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  &[open] summary {
+    @apply border-b border-solid border-[var(--fct-single-product-border-color)];
+  }
+}
+
+.fct-single-product-faqs-answer {
+  @apply px-4 pb-4 text-sm text-[var(--fct-single-product-secondary-text-color)];
+}
+
 // responsive breakpoint
 @media (max-width: 900px) {
   .product-info-block-wrapper {

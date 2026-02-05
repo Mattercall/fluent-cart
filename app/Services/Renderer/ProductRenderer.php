@@ -217,6 +217,48 @@ class ProductRenderer
                     ?>
                 </div>
             </div>
+            <?php $this->renderFaqs(); ?>
+        </div>
+        <?php
+    }
+
+    public function renderFaqs()
+    {
+        $faqs = Arr::get($this->product->detail, 'other_info.faqs', []);
+        if (!is_array($faqs)) {
+            $faqs = [];
+        }
+
+        $faqs = array_values(array_filter($faqs, function ($faq) {
+            $question = is_array($faq) ? trim((string)Arr::get($faq, 'question', '')) : '';
+            $answer = is_array($faq) ? trim((string)Arr::get($faq, 'answer', '')) : '';
+
+            return $question !== '' || $answer !== '';
+        }));
+
+        if (!$faqs) {
+            return;
+        }
+        ?>
+        <div class="fct-single-product-faqs">
+            <h3 class="fct-single-product-faqs-title">
+                <?php echo esc_html__('FAQs', 'fluent-cart'); ?>
+            </h3>
+            <div class="fct-single-product-faqs-list">
+                <?php foreach ($faqs as $faq) :
+                    $question = (string)Arr::get($faq, 'question', '');
+                    $answer = (string)Arr::get($faq, 'answer', '');
+                    ?>
+                    <details class="fct-single-product-faqs-item">
+                        <summary><?php echo esc_html($question); ?></summary>
+                        <?php if ($answer !== '') : ?>
+                            <div class="fct-single-product-faqs-answer">
+                                <?php echo wp_kses_post(wpautop($answer)); ?>
+                            </div>
+                        <?php endif; ?>
+                    </details>
+                <?php endforeach; ?>
+            </div>
         </div>
         <?php
     }
