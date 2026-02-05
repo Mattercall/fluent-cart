@@ -25,6 +25,13 @@ if (!defined('FLUENTCART_PLUGIN_PATH')) {
     define('FLUENTCART_MIN_PRO_VERSION', '1.3.9');
 }
 
+if (!defined('FLUENTCART_PRO_PLUGIN_VERSION')) {
+    $fluentcartProBootstrap = __DIR__ . '/fluent-cart-pro/fluent-cart-pro.php';
+    if (file_exists($fluentcartProBootstrap)) {
+        require_once $fluentcartProBootstrap;
+    }
+}
+
 register_activation_hook(__FILE__, function () {
     update_option('fluent_cart_do_activation_redirect', true);
 });
