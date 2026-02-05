@@ -23,6 +23,7 @@ class TemplateActions
         add_action('fluent_cart/template/main_content', [$this, 'renderMainContent']);
         add_action('fluent_cart/template/product_archive', [$this, 'renderProductArchive']);
         add_action('fluent_cart/product/render_product_header', [$this, 'renderProductHeader']);
+        add_action('fluent_cart/product/after_product_content', [$this, 'renderPromotionalSections'], 15);
 
         add_shortcode('fluent_cart_product_header', function ($atts = []) {
             $atts = shortcode_atts([
@@ -274,6 +275,72 @@ class TemplateActions
             'view_type'   => $storeSettings->get('variation_view', 'both'),
             'column_type' => $storeSettings->get('variation_columns', 'masonry')
         ]))->render();
+    }
+
+    public function renderPromotionalSections($productId = false)
+    {
+        if (!$productId) {
+            $productId = get_the_ID();
+        }
+
+        if (!$productId) {
+            return;
+        }
+
+        $product = ProductDataSetup::getProductModel($productId);
+        if (!$product || !$product->detail) {
+            return;
+        }
+
+        $sections = Arr::get($product->detail, 'other_info.promotional_sections', []);
+        if (!is_array($sections) || empty($sections)) {
+            return;
+        }
+
+        $sections = array_slice($sections, 0, 5);
+        ?>
+        <div class="fct-promotional-sections">
+            <?php foreach ($sections as $index => $section):
+                $heading = Arr::get($section, 'heading', '');
+                $description = Arr::get($section, 'description', '');
+                $badge = Arr::get($section, 'badge', '');
+                $badge = $badge !== '' ? $badge : str_pad((string)($index + 1), 2, '0', STR_PAD_LEFT);
+                $image = Arr::get($section, 'image', []);
+                $imageUrl = '';
+                $imageAlt = '';
+                if (is_array($image)) {
+                    $firstImage = Arr::get($image, '0', []);
+                    $imageUrl = Arr::get($firstImage, 'url', '');
+                    $imageAlt = Arr::get($firstImage, 'alt', Arr::get($firstImage, 'title', ''));
+                } elseif (is_object($image)) {
+                    $imageUrl = Arr::get($image, 'url', '');
+                    $imageAlt = Arr::get($image, 'alt', Arr::get($image, 'title', ''));
+                } elseif (is_string($image)) {
+                    $imageUrl = $image;
+                }
+                $rowClass = $index % 2 === 1 ? 'is-reverse' : '';
+                ?>
+                <div class="fct-promotional-section <?php echo esc_attr($rowClass); ?>">
+                    <div class="fct-promotional-section__media">
+                        <?php if ($imageUrl): ?>
+                            <img src="<?php echo esc_url($imageUrl); ?>" alt="<?php echo esc_attr($imageAlt); ?>">
+                        <?php endif; ?>
+                    </div>
+                    <div class="fct-promotional-section__content">
+                        <span class="fct-promotional-section__badge"><?php echo esc_html($badge); ?></span>
+                        <?php if ($heading): ?>
+                            <h3><?php echo esc_html($heading); ?></h3>
+                        <?php endif; ?>
+                        <?php if ($description): ?>
+                            <div class="fct-promotional-section__description">
+                                <?php echo wp_kses_post($description); ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <?php
     }
 
     private function tempFixShortcodeContent($content)
