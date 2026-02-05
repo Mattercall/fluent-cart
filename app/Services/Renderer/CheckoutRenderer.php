@@ -554,26 +554,17 @@ class CheckoutRenderer
 
     public function renderOrderNoteField($attr_title = '')
     {
-        if (
-            !$this->requireShipping &&
-            apply_filters('fluent_cart/disable_order_notes_for_digital_products', true, [
-                'cart' => $this->cart
-            ])
-        ) {
+        $noteTitle = CartHelper::getCheckoutNoteLabel($this->cart->cart_data ?? [], '');
+        if (empty($noteTitle)) {
             return;
         }
-
-        $noteTitle = __('Leave a Note', 'fluent-cart');
-        if (!empty($attr_title)) {
-            $noteTitle = $attr_title;
-        }
-        $noteTitle = CartHelper::getCheckoutNoteLabel($this->cart->cart_data ?? [], $noteTitle);
         $fieldId = 'order_notes';
 
         (new FormFieldRenderer())->renderField([
             'type' => 'textarea',
             'id' => $fieldId,
             'name' => 'order_notes',
+            'required' => 'yes',
             'aria-label' => __('Order Notes', 'fluent-cart'),
             'placeholder' => __('Notes about your order, e.g. Leave it at my doorstep.', 'fluent-cart'),
             'extra_atts' => [
@@ -581,7 +572,7 @@ class CheckoutRenderer
             ],
             'wrapper_atts' => [
                 'data-fct-item-toggle' => '',
-                'class' => 'fct-toggle-field fct_order_note'
+                'class' => 'fct-toggle-field fct_order_note active'
             ],
             'before_callback' => function ($field) use ($fieldId, $noteTitle) {
                 $toggleId = 'order_notes_toggle';
@@ -589,7 +580,7 @@ class CheckoutRenderer
                 ?>
 
             <button type="button" data-fct-item-toggle-control id="<?php echo esc_attr($toggleId); ?>"
-                class="fct-toggle-control fct_order_note_toggle" aria-expanded="false"
+                class="fct-toggle-control fct_order_note_toggle" aria-expanded="true"
                 aria-controls="<?php echo esc_attr($wrapperId); ?>">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M15.6 12.0001L10.2 17.4001V6.6001L15.6 12.0001Z" fill="currentColor" />
@@ -597,7 +588,7 @@ class CheckoutRenderer
                 <?php echo esc_html($noteTitle); ?>
             </button>
 
-            <div id="<?php echo esc_attr($wrapperId); ?>" class="fct_toggle-wrapper fct_order_note_wrapper" aria-hidden="true">
+            <div id="<?php echo esc_attr($wrapperId); ?>" class="fct_toggle-wrapper fct_order_note_wrapper active" aria-hidden="false">
                 <?php
             },
             'after_callback' => function ($field) {
