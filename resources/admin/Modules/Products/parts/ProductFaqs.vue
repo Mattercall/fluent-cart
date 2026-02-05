@@ -46,8 +46,7 @@ const syncFaqs = () => {
   }
 
   const sanitizedFaqs = serializeFaqs();
-  props.product.faqs = sanitizedFaqs;
-  props.productEditModel.data.product_changes.faqs = sanitizedFaqs;
+  props.productEditModel.onChangeInputField('faqs', sanitizedFaqs);
   triggerChange?.();
 };
 
