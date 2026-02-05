@@ -223,6 +223,7 @@ class ProductController extends Controller
     public function update(ProductUpdateRequest $request, $postId)
     {
         $data = $request->getSafe($request->sanitize());
+        $rawData = $request->all();
 
         if (
             Arr::get($data, 'detail.variation_type') === 'simple' &&
@@ -245,6 +246,14 @@ class ProductController extends Controller
 
         if (is_wp_error($isUpdated)) {
             return $isUpdated;
+        }
+
+        if (array_key_exists('faqs', $rawData)) {
+            $product = Product::query()->find($postId);
+            if ($product) {
+                $faqs = $this->sanitizeFaqs(Arr::get($data, 'faqs', []));
+                $product->updateProductMeta('fluent_cart_product_faqs', $faqs, 'product');
+            }
         }
 
         do_action('fluent_cart/product_updated', [
@@ -450,6 +459,7 @@ class ProductController extends Controller
             $featuredImageId = get_post_thumbnail_id($product->ID);
             $productData = $product->toArray();
             $productData['featured_image_id'] = $featuredImageId;
+            $productData['faqs'] = $product->getProductMeta('fluent_cart_product_faqs', 'product', []);
             //get featured image id
             return $this->sendSuccess([
                 'product'      => $productData,
@@ -462,6 +472,30 @@ class ProductController extends Controller
             ]);
         }
         //return ProductResource::find($postId);
+    }
+
+    private function sanitizeFaqs($faqs): array
+    {
+        if (!is_array($faqs)) {
+            return [];
+        }
+
+        $sanitized = array_map(function ($faq) {
+            $question = sanitize_text_field(Arr::get($faq, 'question', ''));
+            $answer = wp_kses_post(Arr::get($faq, 'answer', ''));
+            $hasContent = trim($question) !== '' && trim(wp_strip_all_tags($answer)) !== '';
+
+            if (!$hasContent) {
+                return null;
+            }
+
+            return [
+                'question' => $question,
+                'answer'   => $answer,
+            ];
+        }, $faqs);
+
+        return array_values(array_filter($sanitized));
     }
 
 
