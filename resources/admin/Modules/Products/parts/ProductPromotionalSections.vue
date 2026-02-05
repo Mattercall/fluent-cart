@@ -138,11 +138,11 @@ watch(() => props.product, () => {
           </div>
 
           <el-form label-position="top" require-asterisk-position="right">
-            <el-form-item :label="translate('Heading')" required>
+            <el-form-item :label="translate('Title')">
               <el-input
                 v-model="section.heading"
                 type="text"
-                :placeholder="translate('Section heading')"
+                :placeholder="translate('Section title')"
                 @input="value => updateSection(index, 'heading', value)"
               />
             </el-form-item>

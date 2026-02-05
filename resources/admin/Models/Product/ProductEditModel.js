@@ -760,6 +760,27 @@ class ProductEditModel extends ProductBaseModel {
 
         let data = this.data.product_changes;
 
+        const promotionalSections = Array.isArray(this.product?.detail?.other_info?.promotional_sections)
+            ? this.product.detail.other_info.promotional_sections
+            : [];
+        const limitedPromotionalSections = promotionalSections.slice(0, 5);
+        if (limitedPromotionalSections.length !== promotionalSections.length) {
+            this.onChangeInputField('promotional_sections', limitedPromotionalSections, false);
+        }
+
+        const hasEmptyPromotionalSection = limitedPromotionalSections.some(section => {
+            const heading = (section?.heading || '').trim();
+            const description = (section?.description || '').trim();
+            return !heading && !description;
+        });
+
+        if (hasEmptyPromotionalSection) {
+            Notify.error(
+                translate('Each promotional section needs at least a title or description before saving.')
+            );
+            return;
+        }
+
         data = {...this.product};
         data.metaValue = this.data.metaValue;
         // delete data.post_content;
