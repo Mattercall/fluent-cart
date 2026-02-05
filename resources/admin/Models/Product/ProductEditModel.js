@@ -690,9 +690,9 @@ class ProductEditModel extends ProductBaseModel {
             }
 
             // Ensure objects exist
-            // if (!this.product.detail) {
-            //     this.product.detail = {};
-            // }
+            if (!this.product.detail) {
+                this.product.detail = {};
+            }
             if (!this.product.detail?.other_info) {
                 this.product.detail.other_info = {};
             }
