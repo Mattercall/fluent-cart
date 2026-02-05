@@ -282,6 +282,10 @@ class CheckoutProcessor
 
             $prevConfig = $prevOrder->config;
             $prevConfig['user_tz'] = Arr::get($this->args, 'user_tz', '');
+            $checkoutNoteLabel = Arr::get($this->args, 'checkout_note_label', '');
+            if ($checkoutNoteLabel) {
+                $prevConfig['checkout_note_label'] = sanitize_text_field($checkoutNoteLabel);
+            }
             $orderData['config'] = $prevConfig;
             $prevOrder->fill($orderData);
             $prevOrder->save();
@@ -828,6 +832,11 @@ class CheckoutProcessor
                 'create_account_after_paid' => Arr::get($this->args, 'create_account_after_paid', 'no')
             ],
         ];
+
+        $checkoutNoteLabel = Arr::get($this->args, 'checkout_note_label', '');
+        if ($checkoutNoteLabel) {
+            $orderData['config']['checkout_note_label'] = sanitize_text_field($checkoutNoteLabel);
+        }
 
         $estimatedTaxTotal = $orderData['tax_behavior'] === 1 ? $orderData['tax_total'] : 0;
         $estimatedShippingTax = $orderData['tax_behavior'] === 1 ? $orderData['shipping_tax'] : 0;

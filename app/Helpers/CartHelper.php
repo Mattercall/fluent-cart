@@ -332,6 +332,42 @@ class CartHelper
         return $shippingMethodAmount;
     }
 
+    public static function getCheckoutNoteLabel(array $items, string $fallback = ''): string
+    {
+        $productIds = array_values(array_unique(array_filter(array_map(function ($item) {
+            return Arr::get($item, 'post_id');
+        }, $items))));
+
+        if (!$productIds) {
+            return $fallback;
+        }
+
+        $products = Product::query()
+            ->whereIn('ID', $productIds)
+            ->with(['detail'])
+            ->get()
+            ->keyBy('ID');
+
+        foreach ($items as $item) {
+            $productId = Arr::get($item, 'post_id');
+            if (!$productId) {
+                continue;
+            }
+
+            $product = $products->get($productId);
+            if (!$product || !$product->detail) {
+                continue;
+            }
+
+            $label = Arr::get($product->detail->other_info, 'checkout_note_label', '');
+            if ($label) {
+                return $label;
+            }
+        }
+
+        return $fallback;
+    }
+
     public static function resetShippingCharge()
     {
         $cart = CartHelper::getCart();

@@ -732,6 +732,7 @@
                 <notes
                     :orderId="order.id"
                     :note="order.note"
+                    :noteLabel="order?.config?.checkout_note_label || translate('Leave a Note')"
                     :shouldEnableEditing="true"
                 />
 

@@ -27,6 +27,9 @@
             </template>
           </el-skeleton>
           <template v-else>
+            <div v-if="noteLabel" class="text-xs font-medium text-gray-500 mb-2">
+              {{ noteLabel }}
+            </div>
             <span>{{
                 noteCopy ? noteTextToDisplay : $t("No notes")
               }}</span>
@@ -79,6 +82,10 @@ export default {
   name: "Notes",
   props: {
     note: {
+      type: String,
+      default: ''
+    },
+    noteLabel: {
       type: String,
       default: ''
     },

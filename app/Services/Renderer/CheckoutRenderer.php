@@ -567,6 +567,7 @@ class CheckoutRenderer
         if (!empty($attr_title)) {
             $noteTitle = $attr_title;
         }
+        $noteTitle = CartHelper::getCheckoutNoteLabel($this->cart->cart_data ?? [], $noteTitle);
         $fieldId = 'order_notes';
 
         (new FormFieldRenderer())->renderField([

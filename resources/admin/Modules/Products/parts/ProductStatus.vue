@@ -62,7 +62,8 @@ const getStatusTooltip = () => {
 const defaultOtherInfo = {
     use_pricing_table: 'no',
     group_pricing_by: 'payment_type',
-    sold_individually: 'no'
+    sold_individually: 'no',
+    checkout_note_label: ''
 };
 
 watch(
@@ -235,6 +236,18 @@ onMounted(() => {
               <el-checkbox @change="value => {productEditModel.onChangeInputField('sold_individually',value)}" v-model="product.detail.other_info.sold_individually" true-value="yes" false-value="no">
                   {{ translate('Limit purchases to 1 item per order') }}
               </el-checkbox>
+          </div>
+          <div class="mt-4" v-if="product.detail">
+              <LabelHint
+                  :title="translate('Checkout Note Field Label')"
+                  :content="translate('Customize the checkout note field label shown when this product is in the cart.')"
+              />
+              <el-input
+                  class="el-input--x-small mt-2"
+                  :placeholder="translate('Leave a Note')"
+                  v-model="product.detail.other_info.checkout_note_label"
+                  @input="value => {productEditModel.onChangeInputField('checkout_note_label', value)}"
+              />
           </div>
       </Card.Body>
     </Card.Container>
