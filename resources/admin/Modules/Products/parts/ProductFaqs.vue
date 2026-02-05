@@ -33,11 +33,7 @@ const serializeFaqs = () => {
       .map(({question, answer}) => ({
         question: question?.trim() || '',
         answer: answer || ''
-      }))
-      .filter((item) => {
-        const strippedAnswer = item.answer.replace(/<[^>]+>/g, '').trim();
-        return item.question && strippedAnswer;
-      });
+      }));
 };
 
 const syncFaqs = () => {
