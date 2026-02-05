@@ -217,7 +217,51 @@ class ProductRenderer
                     ?>
                 </div>
             </div>
+            <?php $this->renderFaqs(); ?>
         </div>
+        <?php
+    }
+
+    public function renderFaqs()
+    {
+        $faqs = $this->product->getProductMeta('fluent_cart_product_faqs', 'product', []);
+
+        if (!is_array($faqs) || count($faqs) === 0) {
+            return;
+        }
+
+        $faqs = array_values(array_filter($faqs, function ($faq) {
+            $question = trim((string)Arr::get($faq, 'question', ''));
+            $answer = trim((string)wp_strip_all_tags(Arr::get($faq, 'answer', '')));
+            return $question !== '' && $answer !== '';
+        }));
+
+        if (count($faqs) === 0) {
+            return;
+        }
+
+        $sectionId = 'fct-product-faqs-' . $this->product->ID;
+        ?>
+        <section class="fct-product-faqs" aria-labelledby="<?php echo esc_attr($sectionId); ?>">
+            <h2 id="<?php echo esc_attr($sectionId); ?>" class="fct-product-faqs-title">
+                <?php esc_html_e('Frequently Asked Questions', 'fluent-cart'); ?>
+            </h2>
+            <div class="fct-product-faqs-list">
+                <?php foreach ($faqs as $index => $faq) :
+                    $question = Arr::get($faq, 'question', '');
+                    $answer = Arr::get($faq, 'answer', '');
+                    ?>
+                    <details class="fct-product-faq">
+                        <summary class="fct-product-faq-question">
+                            <?php echo esc_html($question); ?>
+                        </summary>
+                        <div class="fct-product-faq-answer">
+                            <?php echo wp_kses_post($answer); ?>
+                        </div>
+                    </details>
+                <?php endforeach; ?>
+            </div>
+        </section>
         <?php
     }
 

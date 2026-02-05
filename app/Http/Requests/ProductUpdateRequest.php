@@ -400,6 +400,11 @@ class ProductUpdateRequest extends RequestGuard
             $sanitizers['gallery.*.title'] = 'sanitize_text_field';
         }
 
+        if (isset($data['faqs']) && is_array($data['faqs'])) {
+            $sanitizers['faqs.*.question'] = 'sanitize_text_field';
+            $sanitizers['faqs.*.answer'] = 'wp_kses_post';
+        }
+
         // Variants
         if (isset($data['variants']) && is_array($data['variants'])) {
             foreach ($data['variants'] as $index => $variant) {

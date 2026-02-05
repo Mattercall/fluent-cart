@@ -177,6 +177,86 @@
   }
 }
 
+.fct-product-faqs-admin {
+  .fct-product-faqs-admin-header {
+    @apply flex items-start justify-between gap-4 mb-4;
+  }
+
+  .fct-product-faqs-admin-help {
+    @apply text-xs text-system-mid mt-1;
+  }
+
+  .fct-product-faqs-admin-list {
+    @apply flex flex-col gap-4;
+  }
+
+  .fct-product-faqs-admin-item {
+    @apply border border-solid border-gray-outline rounded-lg p-4 bg-white dark:border-dark-400 dark:bg-dark-700;
+  }
+
+  .fct-product-faqs-admin-item-header {
+    @apply flex items-center justify-between gap-3 mb-4;
+  }
+
+  .fct-product-faqs-admin-item-title {
+    @apply text-sm font-medium text-system-dark dark:text-gray-50;
+  }
+
+  .fct-faq-drag-handle {
+    @apply text-system-light cursor-move flex items-center justify-center border-0 bg-transparent p-0;
+  }
+
+  .fct-product-faqs-admin-fields {
+    @apply grid gap-3;
+  }
+
+  .fct-product-faqs-admin-empty {
+    @apply text-sm text-system-mid bg-gray-25 border border-solid border-gray-outline rounded-lg p-4 dark:bg-dark-700 dark:border-dark-400;
+  }
+}
+
+.fct-product-faqs {
+  @apply mt-10;
+
+  .fct-product-faqs-title {
+    @apply text-xl font-semibold text-system-dark mb-4 dark:text-gray-50;
+  }
+
+  .fct-product-faqs-list {
+    @apply flex flex-col gap-3;
+  }
+
+  .fct-product-faq {
+    @apply border border-solid border-gray-outline rounded-lg bg-white dark:border-dark-400 dark:bg-dark-700;
+  }
+
+  .fct-product-faq-question {
+    @apply flex items-center justify-between w-full cursor-pointer text-base font-medium text-system-dark p-4 dark:text-gray-50;
+    list-style: none;
+  }
+
+  .fct-product-faq-question::-webkit-details-marker {
+    display: none;
+  }
+
+  .fct-product-faq-question::after {
+    content: "+";
+    @apply text-system-mid text-lg dark:text-gray-300;
+  }
+
+  .fct-product-faq[open] .fct-product-faq-question::after {
+    content: "–";
+  }
+
+  .fct-product-faq-question:focus-visible {
+    @apply outline-none ring-2 ring-primary-500 rounded-md;
+  }
+
+  .fct-product-faq-answer {
+    @apply px-4 pb-4 text-sm text-system-mid leading-relaxed dark:text-gray-300;
+  }
+}
+
 .fc_product_search_table {
   @apply max-h-[390px] overflow-x-hidden -mx-5;
   .el-table__header-wrapper {

@@ -370,6 +370,9 @@ class ProductRequest extends RequestGuard
             }
         ];
 
+        $sanitizer['faqs.*.question'] = 'sanitize_text_field';
+        $sanitizer['faqs.*.answer'] = 'wp_kses_post';
+
         $otherInfoSanitizer = [
             'variants.*.manage_cost'    => 'sanitize_text_field',
             'variants.*.total_stock'    => 'intval',
