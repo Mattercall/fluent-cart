@@ -2,7 +2,7 @@
 @tailwind utilities;
 
 :root {
-  --fct-direct-btn-bg-color: var(--fct-btn-bg-color, #253241);
+  --fct-direct-btn-bg-color: var(--fct-btn-bg-color, #000);
   --fct-direct-btn-text-color: var(--fct-btn-text-color, #ffffff);
 }
 
@@ -20,7 +20,7 @@
   @apply no-underline !important;
 
   &:hover {
-     background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.00) 100%), var(--fct-direct-btn-bg-color, #253241);
+     background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.00) 100%), var(--fct-direct-btn-bg-color, #000);
      box-shadow: inset 0px 0.5px 0.5px 0.5px rgba(255, 255, 255, 0.1);
      color: #fff;
   }
