@@ -862,7 +862,13 @@ class CheckoutApi
         }
 
         foreach ($availableShippingMethods as $shippingMethod) {
-            if ((float) Arr::get($shippingMethod, 'charge_amount', 0) === 0.0) {
+            $shippingCost = Arr::get($shippingMethod, 'charge_amount');
+
+            if ($shippingCost === null) {
+                $shippingCost = Arr::get($shippingMethod, 'amount');
+            }
+
+            if ((float) $shippingCost === 0.0) {
                 return $shippingMethod->id;
             }
         }
