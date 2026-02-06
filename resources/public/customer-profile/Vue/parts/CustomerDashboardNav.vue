@@ -31,6 +31,11 @@ const routes = computed(() => {
       name: translate('Profile'),
       components: 'profile'
     },
+    {
+      name: translate('Support Centre'),
+      href: '/support',
+      isExternalLink: true
+    },
   ];
 
   return baseRoutes;
@@ -55,17 +60,28 @@ const isRouteActive = (tabRoute) => {
 
 <template>
   <div class="fct-customer-dashboard-navs" role="navigation" :aria-label="$t('Customer Dashboard Navigation')">
-    <router-link
-        v-for="(route, i) in routes" :key="i"
-        class="fct-customer-dashboard-nav-link"
-        :to="{name: route.components }"
-        :class="{'tab-item-active': isRouteActive(route)}"
-        role="link"
-        :aria-current="isRouteActive(route) ? 'page' : null"
-        :aria-label="route.name"
-    >
-      {{ route.name }}
-    </router-link>
+    <template v-for="(route, i) in routes" :key="i">
+      <a
+          v-if="route.isExternalLink"
+          class="fct-customer-dashboard-nav-link"
+          :href="route.href"
+          role="link"
+          :aria-label="route.name"
+      >
+        {{ route.name }}
+      </a>
+
+      <router-link
+          v-else
+          class="fct-customer-dashboard-nav-link"
+          :to="{name: route.components }"
+          :class="{'tab-item-active': isRouteActive(route)}"
+          role="link"
+          :aria-current="isRouteActive(route) ? 'page' : null"
+          :aria-label="route.name"
+      >
+        {{ route.name }}
+      </router-link>
+    </template>
   </div>
 </template>
-

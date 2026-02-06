@@ -231,6 +231,7 @@ return [
     'Subscription pagination' => __('Subscription pagination', 'fluent-cart'),
     'Subscription plans table' => __('Subscription plans table', 'fluent-cart'),
     'Subscriptions' => __('Subscriptions', 'fluent-cart'),
+    'Support Centre' => __('Support Centre', 'fluent-cart'),
     'Subtotal' => __('Subtotal', 'fluent-cart'),
     'Subtotal for this item' => __('Subtotal for this item', 'fluent-cart'),
     'Succeeded' => __('Succeeded', 'fluent-cart'),
