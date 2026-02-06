@@ -247,8 +247,15 @@ class ProductRenderer
         $this->renderItemPrice();
 
         $this->renderQuantity();
+        $buttonsWrapClasses = [
+                'fct-product-buttons-wrap',
+        ];
+
+        if ($this->storeSettings->get('hide_add_to_cart_on_single_product') === 'yes') {
+            $buttonsWrapClasses[] = 'fct-product-buttons-wrap-full-width-buy-now';
+        }
         ?>
-        <div class="fct-product-buttons-wrap">
+        <div class="<?php echo esc_attr(implode(' ', $buttonsWrapClasses)); ?>">
             <?php $this->renderPurchaseButtons(Arr::get($atts, 'button_atts', [])); ?>
         </div>
         <?php
