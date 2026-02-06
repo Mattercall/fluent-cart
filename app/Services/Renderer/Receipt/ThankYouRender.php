@@ -804,7 +804,7 @@ class ThankYouRender
         ?>
         <div class="fct-thank-you-page-order-items-addresses-ship-to">
             <h5 class="fct-thank-you-page-order-items-addresses-ship-to-title">
-                <?php echo esc_html__('Ship To', 'fluent-cart'); ?>
+                <?php echo esc_html__('Delivery to', 'fluent-cart'); ?>
             </h5>
             <?php if (!empty($order->shipping_address)) : ?>
                 <div class="fct-thank-you-page-order-items-addresses-ship-to-address">

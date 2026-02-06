@@ -109,6 +109,14 @@ class ShippingModule
         $prevShippingMethodId = Arr::get($fillData, 'checkout_data.shipping_data.shipping_method_id', null);
 
         $shippingMethod = Arr::first($availableShippingMethods);
+
+        foreach ($availableShippingMethods as $method) {
+            if ((float) $method->charge_amount === 0.0) {
+                $shippingMethod = $method;
+                break;
+            }
+        }
+
         if ($prevShippingMethodId) {
             foreach ($availableShippingMethods as $method) {
                 if ($method->id == $prevShippingMethodId) {
