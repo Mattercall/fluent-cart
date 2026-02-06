@@ -235,7 +235,7 @@ $orderTaxRates = $order->orderTaxRates->first();
                         <?php if ($order->fulfillment_type === 'physical') : ?>
                             <div style="border-radius: 5px;print-color-adjust: exact;">
                                 <h5 style="font-weight: bold;font-size: 14px;margin: 0 0 10px 0;color: #495057;border-bottom: 1px solid #dee2e6;padding-bottom: 5px;">
-                                    <?php echo esc_html__('Delivery to', 'fluent-cart'); ?>
+                                    <?php echo esc_html__('Ship To', 'fluent-cart'); ?>
                                 </h5>
                                 <?php if (!empty($order->shipping_address)) : ?>
                                     <div style="margin-bottom: 3px;">
