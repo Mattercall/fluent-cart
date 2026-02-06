@@ -132,7 +132,7 @@ class CustomerProfileHandler extends ShortCode
             $requestedPath = array_shift($paths);
         }
 
-        $reserved = ['dashboard', 'purchase-history', 'subscriptions', 'licenses', 'downloads', 'profile', 'support-centre'];
+        $reserved = ['dashboard', 'purchase-history', 'subscriptions', 'licenses', 'downloads', 'profile'];
         if(!$requestedPath || in_array($requestedPath, $reserved)) {
             return ''; // No specific path requested, return early
         }
@@ -243,14 +243,6 @@ class CustomerProfileHandler extends ShortCode
                 'link'  => $baseUrl . 'profile',
                 'icon_svg' => '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M4 17.5C4 15.9087 4.63214 14.3826 5.75736 13.2574C6.88258 12.1321 8.4087 11.5 10 11.5C11.5913 11.5 13.1174 12.1321 14.2426 13.2574C15.3679 14.3826 16 15.9087 16 17.5H14.5C14.5 16.3065 14.0259 15.1619 13.182 14.318C12.3381 13.4741 11.1935 13 10 13C8.80653 13 7.66193 13.4741 6.81802 14.318C5.97411 15.1619 5.5 16.3065 5.5 17.5H4ZM10 10.75C7.51375 10.75 5.5 8.73625 5.5 6.25C5.5 3.76375 7.51375 1.75 10 1.75C12.4863 1.75 14.5 3.76375 14.5 6.25C14.5 8.73625 12.4863 10.75 10 10.75ZM10 9.25C11.6575 9.25 13 7.9075 13 6.25C13 4.5925 11.6575 3.25 10 3.25C8.3425 3.25 7 4.5925 7 6.25C7 7.9075 8.3425 9.25 10 9.25Z" fill="currentColor"/>
-                </svg>'
-            ],
-            'support-centre'   => [
-                'label' => __('Support Centre', 'fluent-cart'),
-                'css_class' => 'fct_route',
-                'link'  => $baseUrl . 'support-centre',
-                'icon_svg' => '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M9.99984 1.6665C14.5998 1.6665 18.3332 5.39984 18.3332 9.99984C18.3332 14.5998 14.5998 18.3332 9.99984 18.3332C5.39984 18.3332 1.6665 14.5998 1.6665 9.99984C1.6665 5.39984 5.39984 1.6665 9.99984 1.6665ZM9.99984 3.33317C6.3165 3.33317 3.33317 6.3165 3.33317 9.99984C3.33317 13.6832 6.3165 16.6665 9.99984 16.6665C13.6832 16.6665 16.6665 13.6832 16.6665 9.99984C16.6665 6.3165 13.6832 3.33317 9.99984 3.33317ZM9.99984 11.6665C10.4598 11.6665 10.8332 12.0398 10.8332 12.4998C10.8332 12.9598 10.4598 13.3332 9.99984 13.3332C9.53984 13.3332 9.1665 12.9598 9.1665 12.4998C9.1665 12.0398 9.53984 11.6665 9.99984 11.6665ZM9.99984 6.6665C11.3805 6.6665 12.4998 7.78579 12.4998 9.1665C12.4998 10.1323 11.9532 10.9704 11.1529 11.3877C10.9086 11.5152 10.8332 11.6128 10.8332 11.6665H9.1665C9.1665 10.8454 9.65176 10.2546 10.3813 9.87317C10.6481 9.73408 10.8332 9.47513 10.8332 9.1665C10.8332 8.7065 10.4598 8.33317 9.99984 8.33317C9.53984 8.33317 9.1665 8.7065 9.1665 9.1665H7.49984C7.49984 7.78579 8.61913 6.6665 9.99984 6.6665Z" fill="currentColor"/>
                 </svg>'
             ]
         ];
@@ -379,8 +371,7 @@ class CustomerProfileHandler extends ShortCode
                 'logout_url' => wp_logout_url(home_url()),
                 'datei18'    => TransStrings::dateTimeStrings(),
                 'el_strings' => TransStrings::elStrings(),
-                'wp_locale'  => get_locale(),
-                'support_portal_html' => do_shortcode('[fluent_support_portal]')
+                'wp_locale'  => get_locale()
             ],
             'fluentCartRestVars'               => [
                 'rest' => Helper::getRestInfo(),
