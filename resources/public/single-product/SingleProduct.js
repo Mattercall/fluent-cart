@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
         #subscriptionInfo;
         #productId;
         #pricingSection;
+        #buyNowCounterBadge;
+        #storageKeyPrefix = 'fluent_cart_product_buy_now_count_';
 
         toTitleCase(str) {
             return str.replace(
@@ -64,12 +66,14 @@ document.addEventListener('DOMContentLoaded', () => {
             this.#itemPrice = this.findOneInContainer('[data-fluent-cart-product-item-price]');
             this.#subscriptionInfo = this.findOneInContainer('[data-fluent-cart-product-payment-type]');
             this.#pricingSection = this.findOneInContainer('[data-fluent-cart-product-pricing-section]');
+            this.#buyNowCounterBadge = this.findOneInContainer('[data-fluent-cart-product-added-to-cart-badge]');
 
             this.#setupIncreaseButton();
             this.#setupDecreaseButton();
             this.#setupQuantityInput();
             this.#setupCartButtons();
             this.#setupVariationButtons();
+            this.#setupBuyNowCounter();
 
             this.#setup();
 
@@ -519,6 +523,61 @@ document.addEventListener('DOMContentLoaded', () => {
             document.addEventListener(actionName, () => {
                 this.#resetQuantity();
             });
+        }
+
+
+        #setupBuyNowCounter() {
+            this.#renderBuyNowCounter();
+
+            this.#buyNowButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    this.#incrementBuyNowCounter();
+                });
+            });
+        }
+
+        #getBuyNowCounterStorageKey() {
+            if (!this.#productId) {
+                return null;
+            }
+
+            return `${this.#storageKeyPrefix}${this.#productId}`;
+        }
+
+        #getBuyNowCounterValue() {
+            const key = this.#getBuyNowCounterStorageKey();
+            if (!key) {
+                return 0;
+            }
+
+            const rawValue = window.localStorage.getItem(key);
+            const parsedValue = parseInt(rawValue || '0', 10);
+
+            return Number.isNaN(parsedValue) ? 0 : parsedValue;
+        }
+
+        #setBuyNowCounterValue(value) {
+            const key = this.#getBuyNowCounterStorageKey();
+            if (!key) {
+                return;
+            }
+
+            window.localStorage.setItem(key, String(value));
+        }
+
+        #incrementBuyNowCounter() {
+            const nextValue = this.#getBuyNowCounterValue() + 1;
+            this.#setBuyNowCounterValue(nextValue);
+            this.#renderBuyNowCounter(nextValue);
+        }
+
+        #renderBuyNowCounter(count = null) {
+            if (!this.#buyNowCounterBadge) {
+                return;
+            }
+
+            const currentCount = count === null ? this.#getBuyNowCounterValue() : count;
+            this.#buyNowCounterBadge.textContent = `${currentCount} ${this.$t('People Added to Cart')}`;
         }
 
         #initiallyHideAddToCartButton() {
