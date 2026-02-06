@@ -112,7 +112,7 @@ onMounted(() => {
   ensurePromoSections();
 });
 
-watch(() => props.product?.id, () => {
+watch(() => props.product?.ID, () => {
   ensurePromoSections();
 });
 </script>
