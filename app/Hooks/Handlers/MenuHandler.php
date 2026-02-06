@@ -407,9 +407,7 @@ class MenuHandler
                 'id'        => $currentUser->ID,
                 'full_name' => trim($currentUser->display_name),
                 'email'     => $currentUser->user_email,
-                'avatar'    => get_avatar_url($currentUser->ID),
-                'roles'     => $currentUser->roles,
-                'is_shop_manager' => in_array('shop_manager', $currentUser->roles, true)
+                'avatar'    => get_avatar_url($currentUser->ID)
             ],
             'shop'                             => Helper::shopConfig(),
             'product_statuses'                 => Status::getProductStatuses(),
@@ -529,3 +527,4 @@ class MenuHandler
     }
 
 }
+

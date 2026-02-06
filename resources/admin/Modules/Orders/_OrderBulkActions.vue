@@ -12,11 +12,11 @@
       <template #dropdown>
         <el-dropdown-menu>
           <div v-if="trigger_action !== 'add'">
-            <el-dropdown-item command="shipping_status" v-if="!isShopManager && !isCancelled && order?.fulfillment_type === 'physical'">
+            <el-dropdown-item command="shipping_status" v-if="!isCancelled && order?.fulfillment_type === 'physical'">
               <DynamicIcon name="ShipmentStatus"/>
               {{ translate('Change Shipping Status') }}
             </el-dropdown-item>
-            <el-dropdown-item command="delete_order" v-if="!isShopManager && isCancelled" class="item-destructive">
+            <el-dropdown-item command="delete_order" v-if="isCancelled" class="item-destructive">
               <DynamicIcon name="Delete"/>
               {{ translate('Delete order') }}
             </el-dropdown-item>
@@ -24,31 +24,31 @@
               <DynamicIcon name="Check"/>
               {{ translate('Mark As Complete') }}
             </el-dropdown-item>
-            <el-dropdown-item command="order_cancel" v-if="!isShopManager && !isCancelled">
+            <el-dropdown-item command="order_cancel" v-if="!isCancelled">
               <DynamicIcon name="Cross"/>
               {{ translate('Cancel Order') }}
             </el-dropdown-item>
-            <el-dropdown-item command="order_processing" v-if="!isShopManager && order.status === 'completed'">
+            <el-dropdown-item command="order_processing" v-if="order.status === 'completed'">
               <DynamicIcon name="Refresh"/>
               {{ translate('Back to processing') }}
             </el-dropdown-item>
-            <el-dropdown-item command="order_receipt" class="item-link" v-if="!isShopManager">
+            <el-dropdown-item command="order_receipt" class="item-link">
               <a target="_blank" :href="order.receipt_url">
                 <DynamicIcon name="External"/>
                 {{ translate('Receipt') }}
               </a>
             </el-dropdown-item>
-            <el-dropdown-item command="generate_missing_licenses" v-if="!isShopManager && order?.has_missing_licenses">
+            <el-dropdown-item command="generate_missing_licenses" v-if="order?.has_missing_licenses">
               <DynamicIcon name="Files"/>
               {{ translate('Generate missing licenses') }}
             </el-dropdown-item>
 
-            <el-dropdown-item command="refund_order" class="bulk-action-only-mobile" v-if="!isShopManager && shouldShowRefund">
+            <el-dropdown-item command="refund_order" class="bulk-action-only-mobile" v-if="shouldShowRefund">
               <DynamicIcon name="Money"/>
               {{ translate('Refund') }}
             </el-dropdown-item>
 
-            <el-dropdown-item v-if="!isShopManager" :command="{
+            <el-dropdown-item :command="{
                 action: 'order_edit',
                 isEditingItem: isEditingItem
             }" class="bulk-action-only-mobile" :disabled="shouldDisableEditing">
@@ -133,7 +133,6 @@ export default {
       isCancelled: ['canceled'].includes(this.order.status),
       isCompleted: ['completed'].includes(this.order.status),
       isUnshippable: ['unshippable'].includes(this.order.shipping_status),
-      isShopManager: this.appVars?.me?.is_shop_manager,
     }
   },
   methods: {
