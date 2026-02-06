@@ -4,6 +4,7 @@ namespace FluentCart\App\Hooks\Handlers;
 
 use FluentCart\App\Http\Controllers\ProductFaqController;
 use FluentCart\Framework\Support\Arr;
+use FluentCart\Framework\Support\Helper;
 
 class ProductFaqHandler
 {
@@ -14,7 +15,7 @@ class ProductFaqHandler
 
     public function renderSingleProductFaqs($productId)
     {
-        $faqs = collect(get_option(ProductFaqController::OPTION_KEY, []))->map(function ($faq) {
+        $faqs = Helper::collect(get_option(ProductFaqController::OPTION_KEY, []))->map(function ($faq) {
             return [
                 'id' => absint(Arr::get($faq, 'id')),
                 'question' => sanitize_text_field(Arr::get($faq, 'question', '')),

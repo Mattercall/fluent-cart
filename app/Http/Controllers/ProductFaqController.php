@@ -6,6 +6,7 @@ use FluentCart\App\CPT\FluentProducts;
 use FluentCart\App\Models\Product;
 use FluentCart\Framework\Http\Request\Request;
 use FluentCart\Framework\Support\Arr;
+use FluentCart\Framework\Support\Helper;
 
 class ProductFaqController extends Controller
 {
@@ -15,7 +16,7 @@ class ProductFaqController extends Controller
     {
         $search = sanitize_text_field($request->get('search', ''));
         $productId = absint($request->get('product_id'));
-        $faqs = collect($this->getFaqItems());
+        $faqs = Helper::collect($this->getFaqItems());
 
         if ($search) {
             $faqs = $faqs->filter(function ($faq) use ($search) {
@@ -95,7 +96,7 @@ class ProductFaqController extends Controller
     public function delete(Request $request, $id)
     {
         $id = absint($id);
-        $faqs = collect($this->getFaqItems())->reject(function ($faq) use ($id) {
+        $faqs = Helper::collect($this->getFaqItems())->reject(function ($faq) use ($id) {
             return absint(Arr::get($faq, 'id')) === $id;
         })->values()->all();
 
@@ -131,7 +132,7 @@ class ProductFaqController extends Controller
             return [];
         }
 
-        return collect($faqs)->map(function ($faq) {
+        return Helper::collect($faqs)->map(function ($faq) {
             return [
                 'id' => absint(Arr::get($faq, 'id')),
                 'question' => sanitize_text_field(Arr::get($faq, 'question', '')),
