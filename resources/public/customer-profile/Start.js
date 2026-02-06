@@ -8,6 +8,7 @@ import Subscriptions from "./Vue/subcriptions/Subscriptions.vue";
 import SingleSubscription from "./Vue/subcriptions/SingleSubscription.vue";
 import PurchaseHistoryRoute from "./Vue/PurchaseHistoryRoute.vue";
 import UserProfile from "./Vue/UserProfile/UserProfile.vue";
+import SupportCentre from "./Vue/SupportCentre.vue";
 
 import SingleOrder from "./Vue/SingleOrder.vue";
 import App from "./Vue/App.vue";
@@ -108,6 +109,15 @@ const routes = [
         meta: {
             active_menu: 'profile',
             title: 'Profile'
+        }
+    },
+    {
+        name: 'support-centre',
+        path: '/support-centre',
+        component: SupportCentre,
+        meta: {
+            active_menu: 'support-centre',
+            title: 'Support Centre'
         }
     }
 ];
