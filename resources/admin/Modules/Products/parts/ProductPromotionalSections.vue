@@ -71,11 +71,15 @@ const ensurePromoSections = () => {
   hydratePromoSections();
 };
 
-const syncChanges = () => {
-  const sanitizedSections = (Array.isArray(promoSections.value) ? promoSections.value : [])
+const normalizeSections = (sections) => {
+  return (Array.isArray(sections) ? sections : [])
     .map((section) => sanitizeSection(section))
     .filter(Boolean)
     .slice(0, maxSections);
+};
+
+const syncChanges = () => {
+  const sanitizedSections = normalizeSections(promoSections.value);
 
   promoSections.value = [...sanitizedSections];
   props.productEditModel.updateDetailOtherInfoField('mattercall_promo_sections', [...sanitizedSections]);
@@ -86,8 +90,10 @@ const addSection = () => {
     return;
   }
 
-  promoSections.value = [...promoSections.value, createSection()];
-  syncChanges();
+  const nextSections = normalizeSections([...promoSections.value, createSection()]);
+
+  promoSections.value = [...nextSections];
+  props.productEditModel.updateDetailOtherInfoField('mattercall_promo_sections', [...nextSections]);
 };
 
 const removeSection = (index) => {
@@ -138,10 +144,10 @@ watch(() => props.product?.id, () => {
       </p>
 
       <VueDraggableNext
-        :list="promoSections"
+        v-model="promoSections"
         item-key="order_key"
         handle=".promo-section-handle"
-        @change="onReorder"
+        @end="onReorder"
       >
         <template #item="{ element, index }">
           <div class="promo-section-item mb-4 border border-gray-200 rounded-lg p-4">
