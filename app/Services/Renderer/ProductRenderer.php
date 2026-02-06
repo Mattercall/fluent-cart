@@ -1041,6 +1041,10 @@ class ProductRenderer
 
     public function renderAddToCartButton($atts = [])
     {
+        if ($this->storeSettings->get('hide_add_to_cart_on_single_product') === 'yes') {
+            return;
+        }
+
         $defaults = [
                 'buy_now_text'     => __('Buy Now', 'fluent-cart'),
                 'add_to_cart_text' => __('Add To Cart', 'fluent-cart'),

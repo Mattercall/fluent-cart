@@ -56,6 +56,7 @@ class StoreSettings implements ArrayableInterface
             'show_cart_icon_in_body'               => 'yes',
             'additional_address_field'             => 'yes',
             'hide_coupon_field'                    => 'no',
+            'hide_add_to_cart_on_single_product'   => 'no',
             'user_account_creation_mode'           => 'all',
             'checkout_page_id'                     => '',
             'custom_payment_page_id'               => '',
@@ -1026,6 +1027,16 @@ class StoreSettings implements ArrayableInterface
                                 "type"  => "checkbox",
                                 "value" => "no",
                                 'note'  => "<div class='pl-6'>" . __('Hide the coupon code input field on the checkout page.', 'fluent-cart') . "</div>"
+                            ],
+                            'hr_add_to_cart'                  => [
+                                'type'  => 'html',
+                                'value' => '<hr class="settings-divider">'
+                            ],
+                            "hide_add_to_cart_on_single_product" => [
+                                "label" => __('Hide Add to Cart button on single product page', 'fluent-cart'),
+                                "type"  => "checkbox",
+                                "value" => "no",
+                                'note'  => "<div class='pl-6'>" . __('Hide the Add to Cart button from single product pages.', 'fluent-cart') . "</div>"
                             ],
                             'hr6'                             => [
                                 'type'  => 'html',
