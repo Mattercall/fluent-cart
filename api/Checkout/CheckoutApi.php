@@ -837,6 +837,8 @@ class CheckoutApi
                 }
 
 
+            } else {
+                $errors['shipping_method']['required'] = __('You must select a shipping method.', 'fluent-cart');
             }
         }
 
@@ -871,7 +873,7 @@ class CheckoutApi
         $shipping_method = Arr::get($data, 'fc_selected_shipping_method');
 
         if (empty($shipping_method)) {
-            return true;
+            return false;
         }
 
 
