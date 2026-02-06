@@ -61,6 +61,7 @@ import AllCoupons from "@/Modules/Coupons/AllCoupons.vue";
 import AddOrEditCoupon from "@/Modules/Coupons/AddOrEditCoupon.vue";
 
 import CheckoutFields from "@/Modules/Settings/CheckoutFields.vue";
+import CustomerReviews from "@/Modules/Settings/CustomerReviews.vue";
 import AppConfig from "@/utils/Config/AppConfig";
 
 
@@ -513,6 +514,17 @@ export var routes = {
                 meta: {
                     active_menu: 'settings',
                     title: 'Payment Settings',
+                    permission: "is_super_admin"
+                },
+            },
+
+            {
+                name: 'customer_reviews',
+                path: 'customer-reviews',
+                component: CustomerReviews,
+                meta: {
+                    active_menu: 'settings',
+                    title: 'Customer Reviews',
                     permission: "is_super_admin"
                 },
             },
