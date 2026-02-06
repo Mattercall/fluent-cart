@@ -1,6 +1,6 @@
 <script setup>
 import * as Card from '@/Bits/Components/Card/Card.js';
-import {computed, onMounted} from 'vue';
+import {computed, onMounted, ref, watch} from 'vue';
 import translate from '@/utils/translator/Translator';
 import {VueDraggableNext} from 'vue-draggable-next';
 import Attachments from '@/Bits/Components/Attachment/Attachments.vue';
@@ -40,9 +40,18 @@ const getRawPromoSections = () => {
   return otherInfo.mattercall_promo_sections || otherInfo.promo_sections || [];
 };
 
-const promoSections = computed(() => {
-  return getRawPromoSections();
+const promoSections = ref([]);
+
+const canAddSection = computed(() => {
+  return promoSections.value.length < maxSections;
 });
+
+const hydratePromoSections = () => {
+  promoSections.value = (Array.isArray(getRawPromoSections()) ? getRawPromoSections() : [])
+    .map((section) => sanitizeSection(section))
+    .filter(Boolean)
+    .slice(0, maxSections);
+};
 
 const ensurePromoSections = () => {
   if (!props.product.detail) {
@@ -59,33 +68,39 @@ const ensurePromoSections = () => {
     .slice(0, maxSections);
 
   props.product.detail.other_info.mattercall_promo_sections = sanitizedSections;
+  hydratePromoSections();
 };
 
 const syncChanges = () => {
-  const sanitizedSections = promoSections.value
+  const sanitizedSections = (Array.isArray(promoSections.value) ? promoSections.value : [])
     .map((section) => sanitizeSection(section))
     .filter(Boolean)
     .slice(0, maxSections);
 
+  promoSections.value = [...sanitizedSections];
   props.productEditModel.updateDetailOtherInfoField('mattercall_promo_sections', [...sanitizedSections]);
 };
 
 const addSection = () => {
-  if (promoSections.value.length >= maxSections) {
+  if (!canAddSection.value) {
     return;
   }
 
-  promoSections.value.push(createSection());
+  promoSections.value = [...promoSections.value, createSection()];
   syncChanges();
 };
 
 const removeSection = (index) => {
   promoSections.value.splice(index, 1);
+  promoSections.value = [...promoSections.value];
   syncChanges();
 };
 
 const updateSectionImage = (index, images) => {
-  promoSections.value[index].image = images.slice(0, 1);
+  promoSections.value[index] = {
+    ...promoSections.value[index],
+    image: images.slice(0, 1)
+  };
   syncChanges();
 };
 
@@ -96,13 +111,17 @@ const onReorder = () => {
 onMounted(() => {
   ensurePromoSections();
 });
+
+watch(() => props.product?.id, () => {
+  ensurePromoSections();
+});
 </script>
 
 <template>
   <Card.Container>
     <Card.Header :title="translate('Promotional Sections')">
       <template #action>
-        <el-button :disabled="promoSections.length >= maxSections" @click="addSection">
+        <el-button :disabled="!canAddSection" @click="addSection">
           <DynamicIcon name="Plus"/>
           {{ translate('Add Section') }}
         </el-button>
@@ -163,17 +182,17 @@ onMounted(() => {
                 />
               </el-form-item>
 
-              <el-form-item :label="translate('Link URL (optional)')">
+              <el-form-item :label="translate('Button Text (optional)')">
                 <el-input
-                  v-model="element.link_url"
-                  placeholder="https://"
+                  v-model="element.button_text"
                   @input="syncChanges"
                 />
               </el-form-item>
 
-              <el-form-item :label="translate('Button Text (optional)')">
+              <el-form-item :label="translate('Link URL (optional)')">
                 <el-input
-                  v-model="element.button_text"
+                  v-model="element.link_url"
+                  placeholder="https://"
                   @input="syncChanges"
                 />
               </el-form-item>
