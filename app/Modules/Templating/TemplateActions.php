@@ -263,12 +263,16 @@ class TemplateActions
             return;
         }
 
-        $sections = Arr::get((array)$product->detail->other_info, 'promo_sections', []);
+        $sections = Arr::get((array)$product->detail->other_info, 'mattercall_promo_sections', Arr::get((array)$product->detail->other_info, 'promo_sections', []));
         if (empty($sections) || !is_array($sections)) {
             return;
         }
 
         $sections = array_values(array_filter($sections, function ($section) {
+            if (!is_array($section)) {
+                return false;
+            }
+
             return !empty(Arr::get($section, 'title')) || !empty(Arr::get($section, 'description'));
         }));
 
@@ -283,6 +287,7 @@ class TemplateActions
                 $linkUrl = Arr::get($section, 'link_url');
                 $imageUrl = Arr::get($section, 'image.0.url');
                 $imageAlt = Arr::get($section, 'image.0.title', $title);
+                $buttonText = Arr::get($section, 'button_text', __('Learn More', 'fluent-cart'));
                 ?>
                 <div class="fct-product-promo-section-item">
                     <?php if (!empty($imageUrl)): ?>
@@ -306,7 +311,7 @@ class TemplateActions
                             <div class="fct-product-promo-section-description"><?php echo wp_kses_post(wpautop($description)); ?></div>
                         <?php endif; ?>
                         <?php if (!empty($linkUrl)): ?>
-                            <a class="fct-product-promo-section-link" href="<?php echo esc_url($linkUrl); ?>"><?php esc_html_e('Learn More', 'fluent-cart'); ?></a>
+                            <a class="fct-product-promo-section-link" href="<?php echo esc_url($linkUrl); ?>"><?php echo esc_html($buttonText); ?></a>
                         <?php endif; ?>
                     </div>
                 </div>
