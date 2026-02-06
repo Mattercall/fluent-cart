@@ -198,6 +198,15 @@ class ProductUpdateRequest extends RequestGuard
                 return $this->validateTaxClassId($attribute, $value);
             }],
             'detail.other_info.active_editor'     => 'nullable|sanitizeText',
+            'detail.other_info.promo_sections'    => 'nullable|array|max:5',
+            'detail.other_info.promo_sections.*.order_key' => 'nullable|sanitizeText|maxLength:60',
+            'detail.other_info.promo_sections.*.title' => 'nullable|sanitizeText|maxLength:200',
+            'detail.other_info.promo_sections.*.description' => 'nullable|sanitizeTextArea|maxLength:1000',
+            'detail.other_info.promo_sections.*.image' => 'nullable|array',
+            'detail.other_info.promo_sections.*.image.*.id' => 'nullable|numeric',
+            'detail.other_info.promo_sections.*.image.*.url' => 'nullable',
+            'detail.other_info.promo_sections.*.image.*.title' => 'nullable|sanitizeText|maxLength:255',
+            'detail.other_info.promo_sections.*.link_url' => 'nullable|maxLength:500',
             'product_terms'                       => 'nullable|array',
             'product_terms.*'                     => 'nullable|array',
             'product_terms.*.*'                   => 'nullable|numeric',
@@ -376,11 +385,43 @@ class ProductUpdateRequest extends RequestGuard
                 'detail.other_info.shipping_class'    => 'intval',
                 'detail.other_info.tax_class'         => 'intval',
                 'detail.other_info.active_editor'     => 'sanitize_text_field',
+                'detail.other_info.promo_sections'    => function ($value) {
+                    return is_array($value) ? $value : [];
+                },
             ];
 
             foreach ($detailFieldMap as $field => $sanitizer) {
                 if (Arr::has($data, $field)) {
                     $sanitizers[$field] = $sanitizer;
+                }
+            }
+
+
+            $promoSections = Arr::get($data, 'detail.other_info.promo_sections', []);
+            if (is_array($promoSections)) {
+                foreach ($promoSections as $index => $promoSection) {
+                    $promoFieldMap = [
+                        "detail.other_info.promo_sections.$index.order_key"    => 'sanitize_text_field',
+                        "detail.other_info.promo_sections.$index.title"        => 'sanitize_text_field',
+                        "detail.other_info.promo_sections.$index.description"  => function ($value) { return wp_kses_post($value); },
+                        "detail.other_info.promo_sections.$index.link_url"     => function ($value) {
+                            return empty($value) ? '' : sanitize_url($value);
+                        },
+                    ];
+
+                    foreach ($promoFieldMap as $field => $sanitizer) {
+                        if (Arr::has($data, $field)) {
+                            $sanitizers[$field] = $sanitizer;
+                        }
+                    }
+
+                    if (isset($promoSection['image']) && is_array($promoSection['image'])) {
+                        $sanitizers["detail.other_info.promo_sections.$index.image.*.id"] = 'intval';
+                        $sanitizers["detail.other_info.promo_sections.$index.image.*.url"] = function ($value) {
+                            return empty($value) ? '' : sanitize_url($value);
+                        };
+                        $sanitizers["detail.other_info.promo_sections.$index.image.*.title"] = 'sanitize_text_field';
+                    }
                 }
             }
         }

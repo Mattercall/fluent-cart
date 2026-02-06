@@ -90,6 +90,7 @@ class TemplateActions
         });
 
         add_action('fluent_cart/template/before_content', [$this, 'renderArchiveHeader']);
+        add_action('fluent_cart/product/after_product_content', [$this, 'renderPromotionalSections'], 10, 1);
 
     }
 
@@ -252,6 +253,66 @@ class TemplateActions
         }
 
         return $content;
+    }
+
+
+    public function renderPromotionalSections($productId)
+    {
+        $product = ProductDataSetup::getProductModel($productId);
+        if (!$product || !$product->detail) {
+            return;
+        }
+
+        $sections = Arr::get((array)$product->detail->other_info, 'promo_sections', []);
+        if (empty($sections) || !is_array($sections)) {
+            return;
+        }
+
+        $sections = array_values(array_filter($sections, function ($section) {
+            return !empty(Arr::get($section, 'title')) || !empty(Arr::get($section, 'description'));
+        }));
+
+        if (empty($sections)) {
+            return;
+        }
+        ?>
+        <div class="fct-product-promo-sections" data-fluent-cart-product-promo-sections>
+            <?php foreach ($sections as $index => $section):
+                $title = Arr::get($section, 'title');
+                $description = Arr::get($section, 'description');
+                $linkUrl = Arr::get($section, 'link_url');
+                $imageUrl = Arr::get($section, 'image.0.url');
+                $imageAlt = Arr::get($section, 'image.0.title', $title);
+                ?>
+                <div class="fct-product-promo-section-item">
+                    <?php if (!empty($imageUrl)): ?>
+                        <div class="fct-product-promo-section-image">
+                            <?php if (!empty($linkUrl)): ?>
+                                <a href="<?php echo esc_url($linkUrl); ?>">
+                                    <img src="<?php echo esc_url($imageUrl); ?>" alt="<?php echo esc_attr($imageAlt); ?>"/>
+                                </a>
+                            <?php else: ?>
+                                <img src="<?php echo esc_url($imageUrl); ?>" alt="<?php echo esc_attr($imageAlt); ?>"/>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="fct-product-promo-section-content">
+                        <span class="fct-product-promo-section-index"><?php echo esc_html(str_pad((string)($index + 1), 2, '0', STR_PAD_LEFT)); ?></span>
+                        <?php if (!empty($title)): ?>
+                            <h3 class="fct-product-promo-section-title"><?php echo esc_html($title); ?></h3>
+                        <?php endif; ?>
+                        <?php if (!empty($description)): ?>
+                            <div class="fct-product-promo-section-description"><?php echo wp_kses_post(wpautop($description)); ?></div>
+                        <?php endif; ?>
+                        <?php if (!empty($linkUrl)): ?>
+                            <a class="fct-product-promo-section-link" href="<?php echo esc_url($linkUrl); ?>"><?php esc_html_e('Learn More', 'fluent-cart'); ?></a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <?php
     }
 
     public function renderProductHeader($productId = false)
