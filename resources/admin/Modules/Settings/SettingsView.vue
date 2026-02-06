@@ -122,6 +122,13 @@ const routes = ref([
     permission: ["is_super_admin"],
     url: '/settings/customer-reviews'
   },
+
+  {
+    name: translate("Product FAQs"),
+    icon: "Question",
+    permission: ["is_super_admin"],
+    url: '/settings/product-faqs'
+  },
   {
     name: translate("Invoice & Packing"),
     icon: "Invoice",
