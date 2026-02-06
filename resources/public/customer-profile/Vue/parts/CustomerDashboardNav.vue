@@ -31,10 +31,6 @@ const routes = computed(() => {
       name: translate('Profile'),
       components: 'profile'
     },
-    {
-      name: translate('Support Centre'),
-      url: '/support'
-    },
   ];
 
   return baseRoutes;
@@ -45,10 +41,6 @@ const routes = computed(() => {
  * based on the route name and path conditions.
  */
 const isRouteActive = (tabRoute) => {
-  if (tabRoute.url) {
-    return route.path === tabRoute.url;
-  }
-
   const isRouteNameMatch = route.name === tabRoute.components;
   const isOrderRoute = route.fullPath.includes('/order');
   const isSubscriptionRoute = route.fullPath.includes('/subscription');
@@ -63,29 +55,17 @@ const isRouteActive = (tabRoute) => {
 
 <template>
   <div class="fct-customer-dashboard-navs" role="navigation" :aria-label="$t('Customer Dashboard Navigation')">
-    <template v-for="(route, i) in routes" :key="i">
-      <a
-          v-if="route.url"
-          class="fct-customer-dashboard-nav-link"
-          :href="route.url"
-          :class="{'tab-item-active': isRouteActive(route)}"
-          role="link"
-          :aria-current="isRouteActive(route) ? 'page' : null"
-          :aria-label="route.name"
-      >
-        {{ route.name }}
-      </a>
-      <router-link
-          v-else
-          class="fct-customer-dashboard-nav-link"
-          :to="{name: route.components }"
-          :class="{'tab-item-active': isRouteActive(route)}"
-          role="link"
-          :aria-current="isRouteActive(route) ? 'page' : null"
-          :aria-label="route.name"
-      >
-        {{ route.name }}
-      </router-link>
-    </template>
+    <router-link
+        v-for="(route, i) in routes" :key="i"
+        class="fct-customer-dashboard-nav-link"
+        :to="{name: route.components }"
+        :class="{'tab-item-active': isRouteActive(route)}"
+        role="link"
+        :aria-current="isRouteActive(route) ? 'page' : null"
+        :aria-label="route.name"
+    >
+      {{ route.name }}
+    </router-link>
   </div>
 </template>
+
