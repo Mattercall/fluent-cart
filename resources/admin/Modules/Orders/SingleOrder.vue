@@ -65,14 +65,14 @@
           </div>
           <div class="fct-btn-group sm">
             <el-button
-                v-if="shouldShowRefund()"
+                v-if="!isShopManager && shouldShowRefund()"
                 @click="handlePaymentActions('refund')"
                 class="bulk-action-hide-only-mobile"
             >
               {{ translate("Refund") }}
             </el-button>
             <el-button
-                v-if="!isEditingItem"
+                v-if="!isShopManager && !isEditingItem"
                 @click="enableItemEditing"
                 :disabled="shouldDisableEditing"
                 class="bulk-action-hide-only-mobile"
@@ -92,7 +92,7 @@
                 {{ translate("Edit") }}
               </template>
             </el-button>
-            <el-button v-else @click="disableItemEditing" class="bulk-action-hide-only-mobile">
+            <el-button v-else-if="!isShopManager" @click="disableItemEditing" class="bulk-action-hide-only-mobile">
               {{ translate("Disable Editing") }}
             </el-button>
             <order-bulk-actions
@@ -1055,7 +1055,8 @@ export default {
       uniqueItemsCount: 0,
       markingOrderAsPaid: false,
       isMobile: window.innerWidth < 768,
-      taxId: 0
+      taxId: 0,
+      isShopManager: this.appVars?.me?.is_shop_manager
     };
   },
   watch: {
