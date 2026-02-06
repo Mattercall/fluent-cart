@@ -323,6 +323,9 @@ class ProductRenderer
         ?>
         <div class="fct-product-gallery-thumb" role="region"
              aria-label="<?php echo esc_attr($this->product->post_title . ' gallery'); ?>">
+            <span class="fct-product-added-to-cart-badge" data-fluent-cart-product-added-to-cart-badge data-product-id="<?php echo esc_attr($this->product->ID); ?>">
+                <?php echo esc_html(sprintf(__('%d People Added to Cart', 'fluent-cart'), 0)); ?>
+            </span>
             <img
                     src="<?php echo esc_url($this->defaultImageUrl ?? '') ?>"
                     alt="<?php echo esc_attr($this->defaultImageAlt) ?>"
