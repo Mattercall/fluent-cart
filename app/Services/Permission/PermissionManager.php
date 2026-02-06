@@ -86,6 +86,13 @@ class PermissionManager
                     'coupons/view',
                     'integrations/view'
                 ]
+            ],
+            'shop_manager' => [
+                'title'        => __('Shop Manager', 'fluent-cart'),
+                'descriptions' => __('View access for orders only. Customer emails are masked for this role.', 'fluent-cart'),
+                'permissions'  => [
+                    'orders/view'
+                ]
             ]
         ];
 
@@ -299,5 +306,4 @@ class PermissionManager
         return $currentUser && $currentUser->userCan($permission);
     }
 }
-
 

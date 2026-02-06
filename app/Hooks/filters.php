@@ -4,6 +4,7 @@
 use FluentCart\Framework\Database\Orm\Builder;
 use FluentCart\Framework\Foundation\Application;
 
+use FluentCart\App\Services\Permission\ShopManagerPrivacyService;
 use FluentCart\App\Services\Payments\SubscriptionHelper;
 use FluentCart\Framework\Support\Arr;
 
@@ -83,4 +84,12 @@ add_filter('fluent_cart/dummy_product_info', function ($info) {
     }
 
     return $infos;
+});
+
+add_filter('fluent_cart/orders_list', function ($orders) {
+    return ShopManagerPrivacyService::maskCustomerEmails($orders);
+});
+
+add_filter('fluent_cart/order/view', function ($order) {
+    return ShopManagerPrivacyService::maskCustomerEmails($order);
 });
