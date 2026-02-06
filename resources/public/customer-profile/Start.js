@@ -109,16 +109,6 @@ const routes = [
             active_menu: 'profile',
             title: 'Profile'
         }
-    },
-    {
-        name: 'support-centre',
-        path: '/profile/support-centre',
-        component: UserProfile,
-        meta: {
-            active_menu: 'profile',
-            title: 'Support Centre',
-            profile_tab: 'support-centre'
-        }
     }
 ];
 
