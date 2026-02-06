@@ -18,11 +18,30 @@ const createSection = () => ({
   title: '',
   description: '',
   image: [],
+  button_text: '',
   link_url: ''
 });
 
+const sanitizeSection = (section) => {
+  if (!section || typeof section !== 'object' || Array.isArray(section)) {
+    return null;
+  }
+
+  return {
+    ...createSection(),
+    ...section,
+    image: Array.isArray(section.image) ? section.image.slice(0, 1) : [],
+    order_key: section.order_key || `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+  };
+};
+
+const getRawPromoSections = () => {
+  const otherInfo = props.product?.detail?.other_info || {};
+  return otherInfo.mattercall_promo_sections || otherInfo.promo_sections || [];
+};
+
 const promoSections = computed(() => {
-  return props.product?.detail?.other_info?.promo_sections || [];
+  return getRawPromoSections();
 });
 
 const ensurePromoSections = () => {
@@ -34,18 +53,21 @@ const ensurePromoSections = () => {
     props.product.detail.other_info = {};
   }
 
-  if (!Array.isArray(props.product.detail.other_info.promo_sections)) {
-    props.product.detail.other_info.promo_sections = [];
-  } else {
-    props.product.detail.other_info.promo_sections = props.product.detail.other_info.promo_sections.map((section) => ({
-      ...section,
-      order_key: section.order_key || `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
-    }));
-  }
+  const sanitizedSections = (Array.isArray(getRawPromoSections()) ? getRawPromoSections() : [])
+    .map((section) => sanitizeSection(section))
+    .filter(Boolean)
+    .slice(0, maxSections);
+
+  props.product.detail.other_info.mattercall_promo_sections = sanitizedSections;
 };
 
 const syncChanges = () => {
-  props.productEditModel.updateDetailOtherInfoField('promo_sections', [...promoSections.value]);
+  const sanitizedSections = promoSections.value
+    .map((section) => sanitizeSection(section))
+    .filter(Boolean)
+    .slice(0, maxSections);
+
+  props.productEditModel.updateDetailOtherInfoField('mattercall_promo_sections', [...sanitizedSections]);
 };
 
 const addSection = () => {
@@ -90,6 +112,10 @@ onMounted(() => {
     <Card.Body>
       <p class="fct-form-note mb-4">
         {{ translate('Add up to 5 promotional sections that will appear after the long description on the product page.') }}
+      </p>
+
+      <p v-if="promoSections.length >= maxSections" class="fct-form-note mb-4 text-orange-500">
+        {{ translate('Maximum 5 promotional sections are allowed.') }}
       </p>
 
       <VueDraggableNext
@@ -141,6 +167,13 @@ onMounted(() => {
                 <el-input
                   v-model="element.link_url"
                   placeholder="https://"
+                  @input="syncChanges"
+                />
+              </el-form-item>
+
+              <el-form-item :label="translate('Button Text (optional)')">
+                <el-input
+                  v-model="element.button_text"
                   @input="syncChanges"
                 />
               </el-form-item>

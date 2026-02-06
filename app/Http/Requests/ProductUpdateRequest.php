@@ -30,6 +30,10 @@ class ProductUpdateRequest extends RequestGuard
 
 
         $data = $this->all();
+
+        $promoSections = Arr::get($data, 'detail.other_info.mattercall_promo_sections', Arr::get($data, 'detail.other_info.promo_sections', []));
+        Arr::set($data, 'detail.other_info.mattercall_promo_sections', $this->sanitizePromoSections($promoSections));
+
         return $data;
 //
 //        $fulfilmentType = Arr::get(
@@ -70,6 +74,25 @@ class ProductUpdateRequest extends RequestGuard
 //        }
 //
 //        return $data;
+    }
+
+
+    private function sanitizePromoSections($sections): array
+    {
+        if (!is_array($sections)) {
+            return [];
+        }
+
+        $sanitized = [];
+        foreach ($sections as $section) {
+            if (!is_array($section)) {
+                continue;
+            }
+
+            $sanitized[] = $section;
+        }
+
+        return array_slice($sanitized, 0, 5);
     }
 
     function validateShippingClassId($attribute, $value): ?string
@@ -199,14 +222,18 @@ class ProductUpdateRequest extends RequestGuard
             }],
             'detail.other_info.active_editor'     => 'nullable|sanitizeText',
             'detail.other_info.promo_sections'    => 'nullable|array|max:5',
-            'detail.other_info.promo_sections.*.order_key' => 'nullable|sanitizeText|maxLength:60',
-            'detail.other_info.promo_sections.*.title' => 'nullable|sanitizeText|maxLength:200',
-            'detail.other_info.promo_sections.*.description' => 'nullable|sanitizeTextArea|maxLength:1000',
-            'detail.other_info.promo_sections.*.image' => 'nullable|array',
-            'detail.other_info.promo_sections.*.image.*.id' => 'nullable|numeric',
-            'detail.other_info.promo_sections.*.image.*.url' => 'nullable',
-            'detail.other_info.promo_sections.*.image.*.title' => 'nullable|sanitizeText|maxLength:255',
-            'detail.other_info.promo_sections.*.link_url' => 'nullable|maxLength:500',
+            'detail.other_info.promo_sections.*' => 'required|array',
+            'detail.other_info.mattercall_promo_sections'    => 'nullable|array|max:5',
+            'detail.other_info.mattercall_promo_sections.*' => 'required|array',
+            'detail.other_info.mattercall_promo_sections.*.order_key' => 'nullable|sanitizeText|maxLength:60',
+            'detail.other_info.mattercall_promo_sections.*.title' => 'nullable|sanitizeText|maxLength:200',
+            'detail.other_info.mattercall_promo_sections.*.description' => 'nullable|sanitizeTextArea|maxLength:1000',
+            'detail.other_info.mattercall_promo_sections.*.image' => 'nullable|array',
+            'detail.other_info.mattercall_promo_sections.*.image.*.id' => 'nullable|numeric',
+            'detail.other_info.mattercall_promo_sections.*.image.*.url' => 'nullable',
+            'detail.other_info.mattercall_promo_sections.*.image.*.title' => 'nullable|sanitizeText|maxLength:255',
+            'detail.other_info.mattercall_promo_sections.*.button_text' => 'nullable|sanitizeText|maxLength:100',
+            'detail.other_info.mattercall_promo_sections.*.link_url' => 'nullable|maxLength:500',
             'product_terms'                       => 'nullable|array',
             'product_terms.*'                     => 'nullable|array',
             'product_terms.*.*'                   => 'nullable|numeric',
@@ -386,7 +413,10 @@ class ProductUpdateRequest extends RequestGuard
                 'detail.other_info.tax_class'         => 'intval',
                 'detail.other_info.active_editor'     => 'sanitize_text_field',
                 'detail.other_info.promo_sections'    => function ($value) {
-                    return is_array($value) ? $value : [];
+                    return $this->sanitizePromoSections($value);
+                },
+                'detail.other_info.mattercall_promo_sections'    => function ($value) {
+                    return $this->sanitizePromoSections($value);
                 },
             ];
 
@@ -397,16 +427,17 @@ class ProductUpdateRequest extends RequestGuard
             }
 
 
-            $promoSections = Arr::get($data, 'detail.other_info.promo_sections', []);
+            $promoSections = Arr::get($data, 'detail.other_info.mattercall_promo_sections', []);
             if (is_array($promoSections)) {
                 foreach ($promoSections as $index => $promoSection) {
                     $promoFieldMap = [
-                        "detail.other_info.promo_sections.$index.order_key"    => 'sanitize_text_field',
-                        "detail.other_info.promo_sections.$index.title"        => 'sanitize_text_field',
-                        "detail.other_info.promo_sections.$index.description"  => function ($value) { return wp_kses_post($value); },
-                        "detail.other_info.promo_sections.$index.link_url"     => function ($value) {
+                        "detail.other_info.mattercall_promo_sections.$index.order_key"    => 'sanitize_text_field',
+                        "detail.other_info.mattercall_promo_sections.$index.title"        => 'sanitize_text_field',
+                        "detail.other_info.mattercall_promo_sections.$index.description"  => function ($value) { return wp_kses_post($value); },
+                        "detail.other_info.mattercall_promo_sections.$index.link_url"     => function ($value) {
                             return empty($value) ? '' : sanitize_url($value);
                         },
+                        "detail.other_info.mattercall_promo_sections.$index.button_text"  => 'sanitize_text_field',
                     ];
 
                     foreach ($promoFieldMap as $field => $sanitizer) {
@@ -416,11 +447,11 @@ class ProductUpdateRequest extends RequestGuard
                     }
 
                     if (isset($promoSection['image']) && is_array($promoSection['image'])) {
-                        $sanitizers["detail.other_info.promo_sections.$index.image.*.id"] = 'intval';
-                        $sanitizers["detail.other_info.promo_sections.$index.image.*.url"] = function ($value) {
+                        $sanitizers["detail.other_info.mattercall_promo_sections.$index.image.*.id"] = 'intval';
+                        $sanitizers["detail.other_info.mattercall_promo_sections.$index.image.*.url"] = function ($value) {
                             return empty($value) ? '' : sanitize_url($value);
                         };
-                        $sanitizers["detail.other_info.promo_sections.$index.image.*.title"] = 'sanitize_text_field';
+                        $sanitizers["detail.other_info.mattercall_promo_sections.$index.image.*.title"] = 'sanitize_text_field';
                     }
                 }
             }
