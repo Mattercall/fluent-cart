@@ -388,7 +388,7 @@ if ($order->payment_status !== 'paid') {
                                         class="fct-thank-you-page-order-items-addresses-ship-to"
                                          style="font-size:14px;border-radius: 5px;">
                                         <h5 class="fct-thank-you-page-order-items-addresses-ship-to-title" style="font-weight: bold;font-size: 14px;margin: 0 0 10px 0;color: #495057;border-bottom: 1px solid #dee2e6;padding-bottom: 5px;">
-                                            <?php echo esc_html__('Ship To', 'fluent-cart'); ?>
+                                            <?php echo esc_html__('Delivery to', 'fluent-cart'); ?>
                                         </h5>
                                         <?php if (!empty($order->shipping_address)) : ?>
                                             <div

@@ -806,39 +806,39 @@ class CheckoutApi
         }
 
         if ($cart->requireShipping()) {
-            if (!empty($data['fc_selected_shipping_method'])) {
-                $selectedMethod = $data['fc_selected_shipping_method'];
-                $shippingCountry = Arr::get($data, 'billing_country', '');
-                $shippingState = Arr::get($data, 'billing_state', '');
-                $shipToDifferent = Arr::get($data, 'ship_to_different', 'no') === 'yes';
+            $shippingCountry = Arr::get($data, 'billing_country', '');
+            $shippingState = Arr::get($data, 'billing_state', '');
+            $shipToDifferent = Arr::get($data, 'ship_to_different', 'no') === 'yes';
 
-                if ($shipToDifferent) {
-                    $shippingCountry = Arr::get($data, 'shipping_country', '');
-                    $shippingState = Arr::get($data, 'shipping_state', '');
-                }
+            if ($shipToDifferent) {
+                $shippingCountry = Arr::get($data, 'shipping_country', '');
+                $shippingState = Arr::get($data, 'shipping_state', '');
+            }
 
-                $availableShippingMethods = AddressHelper::getShippingMethods($shippingCountry, $shippingState);
+            $availableShippingMethods = AddressHelper::getShippingMethods($shippingCountry, $shippingState);
 
-
-                if (empty($availableShippingMethods) || is_wp_error($availableShippingMethods)) {
-                    $errors['shipping_method']['unavailable'] = __('We don\'t ship to this address. Please select a different address.', 'fluent-cart');
-                } else {
-                    $found = false;
-                    foreach ($availableShippingMethods as $shippingMethod) {
-                        if ($shippingMethod->id == $selectedMethod) {
-                            $found = true;
-                            break;
-                        }
-                    }
-
-                    if (!$found) {
-                        $errors['shipping_method']['invalid'] = __('The selected shipping method is not available.', 'fluent-cart');
-                    }
-                }
-
-
+            if (empty($availableShippingMethods) || is_wp_error($availableShippingMethods)) {
+                $errors['shipping_method']['unavailable'] = __('We don\'t ship to this address. Please select a different address.', 'fluent-cart');
             } else {
-                $errors['shipping_method']['required'] = __('You must select a shipping method.', 'fluent-cart');
+                $selectedMethod = Arr::get($data, 'fc_selected_shipping_method');
+
+                if (empty($selectedMethod)) {
+                    $selectedMethod = static::resolveDefaultShippingMethodId($availableShippingMethods);
+                    $data['fc_selected_shipping_method'] = $selectedMethod;
+                    $data['fc_shipping_method'] = $selectedMethod;
+                }
+
+                $found = false;
+                foreach ($availableShippingMethods as $shippingMethod) {
+                    if ($shippingMethod->id == $selectedMethod) {
+                        $found = true;
+                        break;
+                    }
+                }
+
+                if (!$found) {
+                    $errors['shipping_method']['invalid'] = __('The selected shipping method is not available.', 'fluent-cart');
+                }
             }
         }
 
@@ -852,6 +852,22 @@ class CheckoutApi
         }
 
         return $data;
+    }
+
+    private static function resolveDefaultShippingMethodId($availableShippingMethods)
+    {
+        $fallbackMethod = Arr::first($availableShippingMethods);
+        if (!$fallbackMethod) {
+            return null;
+        }
+
+        foreach ($availableShippingMethods as $shippingMethod) {
+            if ((float) Arr::get($shippingMethod, 'charge_amount', 0) === 0.0) {
+                return $shippingMethod->id;
+            }
+        }
+
+        return $fallbackMethod->id;
     }
 
     public static function validateShippingMethod(array $data, CheckoutService $cartCheckoutService): bool
