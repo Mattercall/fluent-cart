@@ -2,6 +2,11 @@
 
 namespace FluentCart\App\Services\Permission;
 
+use FluentCart\Framework\Database\Orm\Model;
+use FluentCart\Framework\Pagination\AbstractCursorPaginator;
+use FluentCart\Framework\Pagination\AbstractPaginator;
+use FluentCart\Framework\Support\Collection;
+
 class ShopManagerPrivacyService
 {
     public static function shouldMaskCustomerEmails(): bool
@@ -31,6 +36,26 @@ class ShopManagerPrivacyService
             return $data;
         }
 
+        if ($data instanceof Model) {
+            return static::maskModelCustomerEmails($data);
+        }
+
+        if ($data instanceof Collection) {
+            return $data->map(function ($item) {
+                return static::maskCustomerEmails($item);
+            });
+        }
+
+        if ($data instanceof AbstractPaginator || $data instanceof AbstractCursorPaginator) {
+            $maskedItems = static::maskCustomerEmails($data->getCollection());
+
+            if ($maskedItems instanceof Collection) {
+                $data->setCollection($maskedItems);
+            }
+
+            return $data;
+        }
+
         if (is_array($data)) {
             foreach ($data as $key => $value) {
                 if (is_string($key) && stripos($key, 'email') !== false) {
@@ -45,10 +70,6 @@ class ShopManagerPrivacyService
         }
 
         if (is_object($data)) {
-            if (method_exists($data, 'toArray')) {
-                return static::maskCustomerEmails($data->toArray());
-            }
-
             foreach ($data as $key => $value) {
                 if (is_string($key) && stripos($key, 'email') !== false) {
                     $data->{$key} = static::maskEmail($value);
@@ -60,5 +81,20 @@ class ShopManagerPrivacyService
         }
 
         return $data;
+    }
+
+    protected static function maskModelCustomerEmails(Model $model): Model
+    {
+        foreach ($model->getAttributes() as $key => $value) {
+            if (is_string($key) && stripos($key, 'email') !== false) {
+                $model->setAttribute($key, static::maskEmail($value));
+            }
+        }
+
+        foreach ($model->getRelations() as $relation => $value) {
+            $model->setRelation($relation, static::maskCustomerEmails($value));
+        }
+
+        return $model;
     }
 }
