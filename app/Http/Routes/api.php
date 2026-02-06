@@ -22,6 +22,7 @@ use FluentCart\App\Http\Controllers\NotesController;
 use FluentCart\App\Http\Controllers\OnboardingController;
 use FluentCart\App\Http\Controllers\OrderController;
 use FluentCart\App\Http\Controllers\ProductController;
+use FluentCart\App\Http\Controllers\ProductFaqController;
 use FluentCart\App\Http\Controllers\ProductDownloadablesController;
 use FluentCart\App\Http\Controllers\ProductIntegrationsController;
 use FluentCart\App\Http\Controllers\ProductVariationController;
@@ -414,6 +415,23 @@ $router->prefix('settings/')
             'permissions' => 'is_super_admin'
         ]);
         $router->post('customer-reviews/import', [CustomerReviewController::class, 'import'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+
+        
+        $router->get('product-faqs', [ProductFaqController::class, 'index'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->post('product-faqs', [ProductFaqController::class, 'store'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->post('product-faqs/{id}', [ProductFaqController::class, 'update'])->int('id')->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->delete('product-faqs/{id}', [ProductFaqController::class, 'delete'])->int('id')->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->get('product-faqs/products', [ProductFaqController::class, 'products'])->meta([
             'permissions' => 'is_super_admin'
         ]);
 
