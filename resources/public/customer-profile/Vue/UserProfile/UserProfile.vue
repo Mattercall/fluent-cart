@@ -40,29 +40,9 @@
   </div>
 
   <div v-if="profileDetails && !loading" class="fct-customer-dashboard-user-profile fct-customer-dashboard-layout-width" aria-live="polite">
-    <nav class="fct-profile-tabs" :aria-label="translate('Profile sections')">
-      <button
-          type="button"
-          class="fct-profile-tabs__item"
-          :class="{ 'is-active': activeTab === 'profile' }"
-          @click="setActiveTab('profile')"
-      >
-        {{ translate('Profile') }}
-      </button>
-      <button
-          type="button"
-          class="fct-profile-tabs__item"
-          :class="{ 'is-active': activeTab === 'support-centre' }"
-          @click="setActiveTab('support-centre')"
-      >
-        {{ translate('Support Centre') }}
-      </button>
-    </nav>
+    <AccountDetails :profileDetails="profileDetails"/>
 
-    <template v-if="activeTab === 'profile'">
-      <AccountDetails :profileDetails="profileDetails"/>
-
-      <template v-if="!profileDetails.not_a_customer">
+    <template v-if="!profileDetails.not_a_customer">
       <!--    Billing Address-->
       <BillingAddress :profileDetails="profileDetails"
                       @fetch="fetch"
@@ -87,20 +67,7 @@
           {{ translate('Save Profile') }}
         </el-button>
       </footer>
-      </template>
     </template>
-
-    <section v-else class="fct-support-centre" role="region" :aria-label="translate('Support Centre')">
-      <div class="fct-form-container fct-support-centre__container">
-        <div class="form-left">
-          <h3 class="form-heading">{{ translate('Support Centre') }}</h3>
-          <p class="form-desc">{{ translate('Submit and manage your support tickets from your customer account.') }}</p>
-        </div>
-        <div class="form-right">
-          <div class="fct-support-centre__portal" v-html="supportPortalHtml" />
-        </div>
-      </div>
-    </section>
   </div>
 </template>
 
@@ -144,23 +111,18 @@ export default {
       newEmail: '',
       emailConfirmationData: {},
       emailChangeTokenExpiry: '',
-      activeTab: 'profile',
-      supportPortalHtml: window.fluentcart_customer_profile_vars?.support_portal_html || '',
     };
   },
   watch: {
     'profileDetails.first_name': {
-      handler() {
+      handler(newVal, oldVal) {
         this.checkProfileChanges();
       }
     },
     'profileDetails.last_name': {
-      handler() {
+      handler(newVal, oldVal) {
         this.checkProfileChanges();
       }
-    },
-    '$route'(to) {
-      this.activeTab = to?.meta?.profile_tab === 'support-centre' ? 'support-centre' : 'profile';
     }
   },
   methods: {
@@ -211,13 +173,6 @@ export default {
           Notify.error(errors);
         });
 
-    },
-    setActiveTab(tab) {
-      this.activeTab = tab;
-      const routeName = tab === 'support-centre' ? 'support-centre' : 'profile';
-      if (this.$route?.name !== routeName) {
-        this.$router.push({ name: routeName });
-      }
     },
     fetch() {
         this.loading = true;
@@ -277,9 +232,8 @@ export default {
     },
   },
   mounted() {
-    this.activeTab = this.$route?.meta?.profile_tab === 'support-centre' ? 'support-centre' : 'profile';
     this.fetch();
-  },
+  }
 };
 </script>
 
