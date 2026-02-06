@@ -61,8 +61,10 @@ class WebRoutes
 
     public static function registerRoutes()
     {
+        self::maybeRedirectToBrandedQueryKey();
+
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-       $page = sanitize_text_field(wp_unslash($_REQUEST['fluent-cart'] ?? ''));
+        $page = sanitize_text_field(wp_unslash($_REQUEST['fluent-cart'] ?? $_REQUEST['mattercall'] ?? ''));
 
         if (empty($page)) {
             return;
@@ -166,6 +168,7 @@ class WebRoutes
             }
 
             unset($queryArray['fluent-cart']);
+            unset($queryArray['mattercall']);
             unset($queryArray['item_id']);
             unset($queryArray['quantity']);
             unset($queryArray['coupons']);
@@ -200,6 +203,39 @@ class WebRoutes
         }
 
         return '';
+    }
+
+    private static function maybeRedirectToBrandedQueryKey()
+    {
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended
+        if (!isset($_GET['fluent-cart']) || isset($_GET['mattercall'])) {
+            return;
+        }
+
+        $requestUri = wp_unslash($_SERVER['REQUEST_URI'] ?? '');
+        $queryString = wp_unslash($_SERVER['QUERY_STRING'] ?? '');
+
+        if (!$requestUri || !$queryString) {
+            return;
+        }
+
+        $updatedQueryString = preg_replace('/(^|&)fluent-cart=/', '$1mattercall=', $queryString, 1);
+
+        if (!$updatedQueryString || $updatedQueryString === $queryString) {
+            return;
+        }
+
+        $requestPath = parse_url($requestUri, PHP_URL_PATH);
+
+        if (!$requestPath) {
+            return;
+        }
+
+        $redirectUrl = home_url($requestPath . '?' . $updatedQueryString);
+
+        wp_redirect($redirectUrl, 302);
+        exit;
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
     }
 
     private static function handleMainRoutes($page): bool
