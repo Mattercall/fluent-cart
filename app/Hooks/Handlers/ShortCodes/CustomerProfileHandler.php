@@ -371,7 +371,8 @@ class CustomerProfileHandler extends ShortCode
                 'logout_url' => wp_logout_url(home_url()),
                 'datei18'    => TransStrings::dateTimeStrings(),
                 'el_strings' => TransStrings::elStrings(),
-                'wp_locale'  => get_locale()
+                'wp_locale'  => get_locale(),
+                'support_portal_html' => do_shortcode('[fluent_support_portal]')
             ],
             'fluentCartRestVars'               => [
                 'rest' => Helper::getRestInfo(),
