@@ -613,6 +613,30 @@ class ProductEditModel extends ProductBaseModel {
     }
     /* Inventory Management end */
 
+
+    updateDetailOtherInfoField = (name, value) => {
+        if (!this.data.product_changes.detail) {
+            this.data.product_changes.detail = {};
+        }
+
+        if (!this.product.detail) {
+            this.product.detail = {};
+        }
+
+        if (!this.product.detail.other_info) {
+            this.product.detail.other_info = {};
+        }
+
+        if (!this.data.product_changes.detail.other_info) {
+            this.data.product_changes.detail.other_info = {};
+        }
+
+        this.product.detail.other_info[name] = value;
+        this.data.product_changes.detail.other_info[name] = value;
+        this.data.product_changes.detail.id = this.product.detail.id;
+        this.setHasChange(true);
+    }
+
     onChangeInputField = (name, value, triggerChanges = true) => {
 
         if (name === 'post_title' && this.product.detail.variation_type === 'simple') {
