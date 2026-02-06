@@ -10,6 +10,7 @@ use FluentCart\Framework\Database\Orm\Builder;
 use FluentCart\Framework\Database\Orm\Relations\HasOne;
 use FLuentCart\Framework\Support\Arr;
 use FluentCart\Api\Resource\OrderMetaResource;
+use FluentCart\App\Services\Permission\ShopManagerPrivacyService;
 
 class Orders
 {
@@ -34,9 +35,9 @@ class Orders
                 sanitize_sql_orderby(Arr::get($params["params"], 'order_type', 'DESC')))
             ->paginate(Arr::get($params["params"], 'per_page'), ['*'], 'page', Arr::get($params["params"], 'page'));
 
-        return [
+        return ShopManagerPrivacyService::maskCustomerEmails([
             'orders' => $orders
-        ];
+        ]);
     }
 
     public function getByHash($hash)
@@ -56,7 +57,7 @@ class Orders
             ->where('uuid', $hash)
             ->first();
 
-        return $order;
+        return ShopManagerPrivacyService::maskCustomerEmails($order);
     }
 
 
@@ -133,7 +134,7 @@ class Orders
 
     public function getBy(string $column, $value)
     {
-        return Order::query()->where($column, $value)
+        $order = Order::query()->where($column, $value)
             ->with(['customer' => function ($query) {
                 $query->with('billing_address')
                     ->with('shipping_address');
@@ -146,6 +147,8 @@ class Orders
             }])
             ->with('order_items')
             ->first();
+
+        return ShopManagerPrivacyService::maskCustomerEmails($order);
     }
 
     public function getById($id)

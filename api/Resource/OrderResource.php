@@ -24,6 +24,7 @@ use FluentCart\App\Services\DateTime\DateTime;
 use FluentCart\App\Services\OrderService;
 use FluentCart\App\Services\Payments\PaymentHelper;
 use FluentCart\App\Services\Payments\PaymentInstance;
+use FluentCart\App\Services\Permission\ShopManagerPrivacyService;
 use FluentCart\Framework\Database\Orm\Builder;
 use FluentCart\Framework\Database\Orm\Collection;
 use FluentCart\Framework\Support\Arr;
@@ -73,7 +74,7 @@ class OrderResource extends BaseResourceApi
 
         $with = array_merge(['customer', 'filteredOrderItems'], Arr::get($params, 'with', []));
 
-        return $query->with($with)
+        $orders = $query->with($with)
             ->whereHas('customer', function ($query) use ($params) {
                 $query->when(Arr::get($params, 'search'), function ($query) use ($params) {
                     return $query->search(Arr::get($params, 'search', ''));
@@ -87,6 +88,8 @@ class OrderResource extends BaseResourceApi
                 );
             })
             ->paginate(Arr::get($params, 'per_page'), ['*'], 'page', Arr::get($params, 'page'));
+
+        return ShopManagerPrivacyService::maskCustomerEmails($orders);
     }
 
 
@@ -817,7 +820,7 @@ class OrderResource extends BaseResourceApi
             ];
         }
 
-        return $data;
+        return ShopManagerPrivacyService::maskCustomerEmails($data);
     }
 
     /**
