@@ -85,6 +85,7 @@ class FluentMetaRequest extends RequestGuard
             'show_cart_icon_in_body'               => 'sanitize_text_field',
             'additional_address_field'             => 'sanitize_text_field',
             'hide_coupon_field'                    => 'sanitize_text_field',
+            'hide_add_to_cart_on_single_product'   => 'sanitize_text_field',
             'user_account_creation_mode'           => 'sanitize_text_field',
             'force_ssl'                            => 'sanitize_text_field',
             'checkout_page_id'                     => 'intval',
