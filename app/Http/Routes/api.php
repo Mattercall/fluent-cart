@@ -11,6 +11,7 @@ use FluentCart\App\Http\Controllers\AppControllers\AppController;
 use FluentCart\App\Http\Controllers\AttributesController;
 use FluentCart\App\Http\Controllers\CheckoutFieldsController;
 use FluentCart\App\Http\Controllers\CustomerController;
+use FluentCart\App\Http\Controllers\CustomerReviewController;
 use FluentCart\App\Http\Controllers\DashboardController;
 use FluentCart\App\Http\Controllers\EmailNotificationController;
 use FluentCart\App\Http\Controllers\FileUploadController;
@@ -389,6 +390,32 @@ $router->prefix('settings/')
             'permissions' => 'is_supper_admin'
         ]);
 
+
+
+        $router->get('customer-reviews', [CustomerReviewController::class, 'index'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->post('customer-reviews', [CustomerReviewController::class, 'store'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->post('customer-reviews/{id}', [CustomerReviewController::class, 'update'])->int('id')->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->delete('customer-reviews/{id}', [CustomerReviewController::class, 'delete'])->int('id')->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->post('customer-reviews/bulk-delete', [CustomerReviewController::class, 'bulkDelete'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->get('customer-reviews/products', [CustomerReviewController::class, 'products'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->get('customer-reviews/export', [CustomerReviewController::class, 'export'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->post('customer-reviews/import', [CustomerReviewController::class, 'import'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
 
         $router->get('storage-drivers', [StorageController::class, 'index'])->meta([
             'permissions' => 'is_super_admin'
