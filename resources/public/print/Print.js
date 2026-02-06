@@ -12,6 +12,7 @@ document.getElementById('print-button').addEventListener('click', () => {
         debug: false,
         importCSS: true,
         printContainer: true,
+        header: '<style>@page{margin:0 !important;} @media print{html,body{margin:0 !important;padding:0 !important;}}</style>',
         pageTitle: invoiceNo,
         removeInline: false,
         printDelay: 100,

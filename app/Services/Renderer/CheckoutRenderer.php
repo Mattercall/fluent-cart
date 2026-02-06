@@ -410,10 +410,7 @@ class CheckoutRenderer
             return;
         }
 
-        $this->renderShipToDifferentField();
         do_action('fluent_cart/after_billing_fields_section', ['cart' => $this->cart]);
-
-        $this->renderShippingAddressFields();
         echo '</div>';
     }
 

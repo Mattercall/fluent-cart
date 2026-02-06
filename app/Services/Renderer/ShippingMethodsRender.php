@@ -26,7 +26,7 @@ class ShippingMethodsRender
             <div class="fct_checkout_form_section" aria-describedby="<?php echo esc_attr($errorId); ?>">
                 <div class="fct_form_section_header">
                     <h4 id="shipping-methods-title" class="fct_form_section_header_label">
-                        <?php echo esc_html__('Shipping Options', 'fluent-cart') ?>
+                        <?php echo esc_html__('Delivery Options', 'fluent-cart') ?>
                     </h4>
                 </div>
                 <div class="fct_form_section_body">
