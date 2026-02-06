@@ -169,10 +169,6 @@ class CustomerReviewController extends Controller
     {
         $reviewerName = sanitize_text_field(Arr::get($data, 'reviewer_name', ''));
         $country = sanitize_text_field(Arr::get($data, 'country', ''));
-        $normalizedCountryCode = strtoupper($country);
-        if (preg_match('/^[A-Z]{2}$/', $normalizedCountryCode)) {
-            $country = $normalizedCountryCode;
-        }
         $countryFlag = wp_kses_post(Arr::get($data, 'country_flag', ''));
         $rating = min(5, max(1, absint(Arr::get($data, 'rating', 5))));
         $reviewText = sanitize_textarea_field(Arr::get($data, 'review_text', ''));
