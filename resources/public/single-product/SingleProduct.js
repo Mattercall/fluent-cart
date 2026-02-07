@@ -24,6 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
         #productId;
         #pricingSection;
         #buyNowCounterBadge;
+        #stickyBuyNowButton;
+        #stickyBuyNowVisibilityObserver;
+        #stickyBuyNowSyncObserver;
 
         toTitleCase(str) {
             return str.replace(
@@ -73,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.#setupCartButtons();
             this.#setupVariationButtons();
             this.#setupBuyNowCounter();
+            this.#setupStickyBuyNowButton();
 
             this.#setup();
 
@@ -100,6 +104,115 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 productPage.classList.remove('is-mobile');
             }
+
+            this.#updateStickyBuyNowVisibility();
+        }
+
+        #isMobileView() {
+            return window.matchMedia('(max-width: 815px)').matches;
+        }
+
+        #setupStickyBuyNowButton() {
+            const sourceButton = this.#buyNowButtons[0];
+            if (!sourceButton || this.#stickyBuyNowButton) {
+                return;
+            }
+
+            this.#stickyBuyNowButton = sourceButton.cloneNode(true);
+            this.#stickyBuyNowButton.classList.add('fluent-cart-sticky-buy-now-button');
+            this.#stickyBuyNowButton.classList.remove('is-visible');
+            this.#stickyBuyNowButton.setAttribute('data-fluent-cart-sticky-buy-now-button', '');
+
+            document.body.appendChild(this.#stickyBuyNowButton);
+
+            this.#syncStickyBuyNowButton();
+            this.#observeStickyBuyNowSource(sourceButton);
+            this.#observeStickyBuyNowVisibility(sourceButton);
+            this.#updateStickyBuyNowVisibility();
+        }
+
+        #observeStickyBuyNowSource(sourceButton) {
+            if (!window.MutationObserver) {
+                return;
+            }
+
+            this.#stickyBuyNowSyncObserver = new MutationObserver(() => {
+                this.#syncStickyBuyNowButton();
+                this.#updateStickyBuyNowVisibility();
+            });
+
+            this.#stickyBuyNowSyncObserver.observe(sourceButton, {
+                attributes: true,
+                childList: true,
+                subtree: true
+            });
+        }
+
+        #observeStickyBuyNowVisibility(sourceButton) {
+            if (!window.IntersectionObserver) {
+                return;
+            }
+
+            this.#stickyBuyNowVisibilityObserver = new IntersectionObserver((entries) => {
+                const entry = entries[0];
+                const shouldShow = !entry?.isIntersecting;
+                this.#toggleStickyBuyNowButton(shouldShow);
+            }, {
+                threshold: 0
+            });
+
+            this.#stickyBuyNowVisibilityObserver.observe(sourceButton);
+        }
+
+        #syncStickyBuyNowButton() {
+            const sourceButton = this.#buyNowButtons[0];
+            if (!sourceButton || !this.#stickyBuyNowButton) {
+                return;
+            }
+
+            const preservedClasses = ['fluent-cart-sticky-buy-now-button', 'is-visible'];
+            const classes = sourceButton.className.split(' ').filter(className => className && !preservedClasses.includes(className));
+            this.#stickyBuyNowButton.className = [...classes, 'fluent-cart-sticky-buy-now-button'].join(' ');
+
+            this.#stickyBuyNowButton.innerHTML = sourceButton.innerHTML;
+
+            Array.from(sourceButton.attributes).forEach((attribute) => {
+                if (attribute.name === 'class' || attribute.name === 'data-fluent-cart-direct-checkout-button') {
+                    return;
+                }
+                this.#stickyBuyNowButton.setAttribute(attribute.name, attribute.value);
+            });
+
+            if (sourceButton.hasAttribute('href')) {
+                this.#stickyBuyNowButton.setAttribute('href', sourceButton.getAttribute('href'));
+            } else {
+                this.#stickyBuyNowButton.removeAttribute('href');
+            }
+
+            this.#stickyBuyNowButton.toggleAttribute('disabled', sourceButton.hasAttribute('disabled'));
+            this.#stickyBuyNowButton.setAttribute('aria-hidden', 'true');
+        }
+
+        #updateStickyBuyNowVisibility() {
+            const sourceButton = this.#buyNowButtons[0];
+            if (!sourceButton || !this.#stickyBuyNowButton) {
+                return;
+            }
+
+            const rect = sourceButton.getBoundingClientRect();
+            const isVisibleInViewport = rect.top < window.innerHeight && rect.bottom > 0;
+            this.#toggleStickyBuyNowButton(!isVisibleInViewport);
+        }
+
+        #toggleStickyBuyNowButton(shouldShow) {
+            const sourceButton = this.#buyNowButtons[0];
+            if (!sourceButton || !this.#stickyBuyNowButton) {
+                return;
+            }
+
+            const isSourceButtonUsable = !sourceButton.classList.contains('is-hidden') && !sourceButton.hasAttribute('disabled') && !sourceButton.classList.contains('disabled');
+            const canShow = shouldShow && this.#isMobileView() && isSourceButtonUsable;
+            this.#stickyBuyNowButton.classList.toggle('is-visible', canShow);
         }
 
         #getImageIndexFromAlbum(album, imageSrc) {

@@ -545,3 +545,17 @@
   line-height: 1.75;
   color: #4b5563;
 }
+
+.fluent-cart-sticky-buy-now-button {
+  @apply fixed left-4 right-4 bottom-4 z-[9999] opacity-0 pointer-events-none translate-y-3 transition-all duration-200;
+}
+
+.fluent-cart-sticky-buy-now-button.is-visible {
+  @apply opacity-100 pointer-events-auto translate-y-0;
+}
+
+@media (min-width: 816px) {
+  .fluent-cart-sticky-buy-now-button {
+    @apply hidden !important;
+  }
+}
