@@ -63,6 +63,7 @@ import AddOrEditCoupon from "@/Modules/Coupons/AddOrEditCoupon.vue";
 import CheckoutFields from "@/Modules/Settings/CheckoutFields.vue";
 import CustomerReviews from "@/Modules/Settings/CustomerReviews.vue";
 import ProductFaqs from "@/Modules/Settings/ProductFaqs.vue";
+import ProductPromotionalSection from "@/Modules/Settings/ProductPromotionalSection.vue";
 import AppConfig from "@/utils/Config/AppConfig";
 
 
@@ -537,6 +538,18 @@ export var routes = {
                 meta: {
                     active_menu: 'settings',
                     title: 'Product FAQs',
+                    permission: "is_super_admin"
+                },
+            },
+
+
+            {
+                name: 'product_promotional_section',
+                path: 'product-promotional-section',
+                component: ProductPromotionalSection,
+                meta: {
+                    active_menu: 'settings',
+                    title: 'Promotional Section',
                     permission: "is_super_admin"
                 },
             },
