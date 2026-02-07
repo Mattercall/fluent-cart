@@ -25,6 +25,7 @@ use FluentCart\App\Services\Renderer\CartSummaryRender;
 use FluentCart\App\Services\Renderer\CheckoutFieldsSchema;
 use FluentCart\App\Services\Renderer\CheckoutRenderer;
 use FluentCart\App\Services\Renderer\ProductModalRenderer;
+use FluentCart\App\Services\ProductSocialProofService;
 use FluentCart\App\Services\Renderer\ShippingMethodsRender;
 use FluentCart\Framework\Support\Arr;
 use FluentCart\App\Services\Renderer\ModalCheckoutRenderer;
@@ -581,6 +582,16 @@ class WebCheckoutHandler
             return $cart;
         }
 
+        $socialProofData = [];
+        $shouldTrackSocialProof = Arr::get($requestData, 'track_social_proof') === 'yes';
+        $socialProofProductId = (int)Arr::get($requestData, 'product_id');
+        if ($shouldTrackSocialProof && $socialProofProductId > 0 && (int)Arr::get($data, 'quantity', 0) > 0) {
+            $socialProofData = [
+                'product_id' => $socialProofProductId,
+                'count'      => ProductSocialProofService::increment($socialProofProductId)
+            ];
+        }
+
         do_action('fluent_cart/checkout/cart_amount_updated', [
             'cart' => $cart
         ]);
@@ -662,6 +673,7 @@ class WebCheckoutHandler
             'message' => __('Cart updated successfully', 'fluent-cart'),
             'data' => apply_filters('fluent_cart/checkout/cart_updated', [
                 'cart' => $cart,
+                'social_proof' => $socialProofData
             ]),
             'fragments' => $fragments
         ];

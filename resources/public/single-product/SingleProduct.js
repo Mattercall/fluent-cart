@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
         #productId;
         #pricingSection;
         #buyNowCounterBadge;
-        #storageKeyPrefix = 'fluent_cart_product_buy_now_count_';
 
         toTitleCase(str) {
             return str.replace(
@@ -223,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.#buyNowButtons.forEach(button => {
                 if (status !== st) {
                     const quantity = button.dataset.quantity;
-                    let url = button.getAttribute('data-url') + cartId + '&quantity=' + quantity;
+                    let url = button.getAttribute('data-url') + cartId + '&quantity=' + quantity + '&track_social_proof=yes&product_id=' + encodeURIComponent(this.#productId || '');
                     button.setAttribute('href', url);
                     button.setAttribute('data-cart-id', cartId);
                     button.classList.remove('is-hidden');
@@ -242,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 button.setAttribute('data-quantity', quantity);
                 const cartId = button.getAttribute('data-cart-id');
                 if (cartId) {
-                    let url = button.getAttribute('data-url') + cartId + '&quantity=' + quantity;
+                    let url = button.getAttribute('data-url') + cartId + '&quantity=' + quantity + '&track_social_proof=yes&product_id=' + encodeURIComponent(this.#productId || '');
                     button.setAttribute('href', url);
                 }
             });
@@ -529,47 +528,20 @@ document.addEventListener('DOMContentLoaded', () => {
         #setupBuyNowCounter() {
             this.#renderBuyNowCounter();
 
+            document.addEventListener('fluent_cart/social_proof_updated', (event) => {
+                const data = event?.detail || {};
+                if (!this.#productId || String(data.productId) !== String(this.#productId)) {
+                    return;
+                }
+
+                this.#renderBuyNowCounter(data.count || 0);
+            });
+
             const counterButtons = [...this.#buyNowButtons, ...this.#addToCartButtons];
             counterButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    this.#incrementBuyNowCounter();
-                });
+                button.setAttribute('data-track-social-proof', 'yes');
+                button.setAttribute('data-product-id', this.#productId);
             });
-        }
-
-        #getBuyNowCounterStorageKey() {
-            if (!this.#productId) {
-                return null;
-            }
-
-            return `${this.#storageKeyPrefix}${this.#productId}`;
-        }
-
-        #getBuyNowCounterValue() {
-            const key = this.#getBuyNowCounterStorageKey();
-            if (!key) {
-                return 0;
-            }
-
-            const rawValue = window.localStorage.getItem(key);
-            const parsedValue = parseInt(rawValue || '0', 10);
-
-            return Number.isNaN(parsedValue) ? 0 : parsedValue;
-        }
-
-        #setBuyNowCounterValue(value) {
-            const key = this.#getBuyNowCounterStorageKey();
-            if (!key) {
-                return;
-            }
-
-            window.localStorage.setItem(key, String(value));
-        }
-
-        #incrementBuyNowCounter() {
-            const nextValue = this.#getBuyNowCounterValue() + 1;
-            this.#setBuyNowCounterValue(nextValue);
-            this.#renderBuyNowCounter(nextValue);
         }
 
         #renderBuyNowCounter(count = null) {
@@ -577,8 +549,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const currentCount = count === null ? this.#getBuyNowCounterValue() : count;
+            const serverCount = parseInt(this.#buyNowCounterBadge.dataset.count || '0', 10);
+            const currentCount = count === null ? (Number.isNaN(serverCount) ? 0 : serverCount) : count;
             this.#buyNowCounterBadge.textContent = `${currentCount} ${this.$t('People Added to Cart')}`;
+            this.#buyNowCounterBadge.setAttribute('data-count', String(currentCount));
         }
 
         #initiallyHideAddToCartButton() {

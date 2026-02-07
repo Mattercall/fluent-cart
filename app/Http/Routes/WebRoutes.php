@@ -17,6 +17,7 @@ use FluentCart\App\Modules\PaymentMethods\PayPalGateway\API\PayPalPartnerRendere
 use FluentCart\App\Modules\Templating\AssetLoader;
 use FluentCart\App\Services\FrontendView;
 use FluentCart\App\Services\PrintService;
+use FluentCart\App\Services\ProductSocialProofService;
 use FluentCart\App\Services\Renderer\CartRenderer;
 use FluentCart\App\Services\TemplateService;
 use FluentCart\App\Services\URL;
@@ -139,6 +140,12 @@ class WebRoutes
                 $view = ob_get_clean();
                 FrontendView::make(__('Product Not Found', 'fluent-cart'), $view);
                 die();
+            }
+
+            $shouldTrackSocialProof = Arr::get($requestData, 'track_social_proof') === 'yes';
+            $socialProofProductId = (int)Arr::get($requestData, 'product_id');
+            if ($shouldTrackSocialProof && $socialProofProductId > 0) {
+                ProductSocialProofService::increment($socialProofProductId);
             }
 
             $coupons = App::request()->get('coupons', '');

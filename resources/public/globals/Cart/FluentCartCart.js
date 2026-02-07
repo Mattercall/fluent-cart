@@ -69,8 +69,8 @@ export default class FluentCartCart {
     }
 
 
-    async addProduct(productId, quantity = 1, byInput = false, openCart = false, isCustom = false) {
-        return this.#updateCart(productId, quantity, byInput, openCart, isCustom);
+    async addProduct(productId, quantity = 1, byInput = false, openCart = false, isCustom = false, socialProofProductId = null, shouldTrackSocialProof = false) {
+        return this.#updateCart(productId, quantity, byInput, openCart, isCustom, socialProofProductId, shouldTrackSocialProof);
     }
 
     async removeProduct(variationId, openCart = false) {
@@ -118,7 +118,7 @@ export default class FluentCartCart {
     }
 
 
-    async #updateCart(productId = null, quantity = 1, byInput = false, openCart = false, isCustom = false) {
+    async #updateCart(productId = null, quantity = 1, byInput = false, openCart = false, isCustom = false, socialProofProductId = null, shouldTrackSocialProof = false) {
         if (productId == null) {
             return;
         }
@@ -136,6 +136,11 @@ export default class FluentCartCart {
             quantity: quantity,
             is_custom: isCustom,
         };
+
+        if (shouldTrackSocialProof && socialProofProductId) {
+            params['track_social_proof'] = 'yes';
+            params['product_id'] = socialProofProductId;
+        }
 
         if (byInput) {
             params['by_input'] = true;
@@ -204,6 +209,15 @@ export default class FluentCartCart {
                                 }
                             }
                             if (response && response?.data?.cart?.cart_data) {
+                                const socialProof = response?.data?.social_proof || null;
+                                if (socialProof && socialProof.product_id && socialProof.count !== undefined) {
+                                    document.dispatchEvent(new CustomEvent('fluent_cart/social_proof_updated', {
+                                        detail: {
+                                            productId: socialProof.product_id,
+                                            count: socialProof.count
+                                        }
+                                    }));
+                                }
                                 resolve(response.data.cart.cart_data);
                             } else {
                                 if (response.message) {
