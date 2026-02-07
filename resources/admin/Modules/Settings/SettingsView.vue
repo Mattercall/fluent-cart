@@ -130,6 +130,12 @@ const routes = ref([
     url: '/settings/product-faqs'
   },
   {
+    name: translate("Promotional Section"),
+    icon: "Module",
+    permission: ["is_super_admin"],
+    url: '/settings/product-promotional-section'
+  },
+  {
     name: translate("Invoice & Packing"),
     icon: "Invoice",
     permission: ["is_super_admin"],

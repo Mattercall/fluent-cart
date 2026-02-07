@@ -25,6 +25,7 @@ use FluentCart\App\Http\Controllers\ProductController;
 use FluentCart\App\Http\Controllers\ProductFaqController;
 use FluentCart\App\Http\Controllers\ProductDownloadablesController;
 use FluentCart\App\Http\Controllers\ProductIntegrationsController;
+use FluentCart\App\Http\Controllers\ProductPromotionalSectionController;
 use FluentCart\App\Http\Controllers\ProductVariationController;
 use FluentCart\App\Http\Controllers\StorageController;
 use FluentCart\App\Http\Controllers\SettingsController;
@@ -432,6 +433,17 @@ $router->prefix('settings/')
             'permissions' => 'is_super_admin'
         ]);
         $router->get('product-faqs/products', [ProductFaqController::class, 'products'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+
+
+        $router->get('promotional-section/products', [ProductPromotionalSectionController::class, 'products'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->get('promotional-section', [ProductPromotionalSectionController::class, 'get'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->post('promotional-section', [ProductPromotionalSectionController::class, 'save'])->meta([
             'permissions' => 'is_super_admin'
         ]);
 
