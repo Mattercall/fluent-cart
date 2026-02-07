@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         #buyNowCounterBadge;
         #mediaModal;
         #mediaModalContents;
+        #mediaActionScope;
 
         toTitleCase(str) {
             return str.replace(
@@ -49,6 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return this.#container.querySelector(selector);
         }
 
+        findInMediaActionScope(selector) {
+            return this.#mediaActionScope?.querySelectorAll(selector) || [];
+        }
+
+        findOneInMediaActionScope(selector) {
+            return this.#mediaActionScope?.querySelector(selector) || null;
+        }
+
         init(container, index) {
             this.#index = index;
             this.#container = container;
@@ -68,8 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
             this.#subscriptionInfo = this.findOneInContainer('[data-fluent-cart-product-payment-type]');
             this.#pricingSection = this.findOneInContainer('[data-fluent-cart-product-pricing-section]');
             this.#buyNowCounterBadge = document.querySelector(`[data-fluent-cart-product-added-to-cart-badge][data-product-id="${this.#productId}"]`);
-            this.#mediaModal = this.findOneInContainer('[data-fct-media-modal]');
-            this.#mediaModalContents = this.findInContainer('[data-fct-media-modal-content]');
+            this.#mediaActionScope = this.#container.closest('[data-fluent-cart-single-product-page]') || document;
+            this.#mediaModal = this.findOneInMediaActionScope('[data-fct-media-modal]');
+            this.#mediaModalContents = this.findInMediaActionScope('[data-fct-media-modal-content]');
 
             this.#setupIncreaseButton();
             this.#setupDecreaseButton();
@@ -619,8 +629,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const actionButtons = this.findInContainer('[data-fct-open-media-modal]');
-            const closeButtons = this.findInContainer('[data-fct-media-modal-close]');
+            const actionButtons = this.findInMediaActionScope('[data-fct-open-media-modal]');
+            const closeButtons = this.findInMediaActionScope('[data-fct-media-modal-close]');
 
             actionButtons.forEach((button) => {
                 button.addEventListener('click', () => {
@@ -650,7 +660,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 content.classList.add('is-hidden');
             });
 
-            const activeContent = this.findOneInContainer(`[data-fct-media-modal-content="${type}"]`);
+            const activeContent = this.findOneInMediaActionScope(`[data-fct-media-modal-content="${type}"]`);
             if (activeContent) {
                 activeContent.classList.remove('is-hidden');
 
@@ -695,7 +705,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         #resetVideoPlayer() {
-            const containers = this.findInContainer('[data-fct-media-video-container]');
+            const containers = this.findInMediaActionScope('[data-fct-media-video-container]');
             containers.forEach((container) => {
                 container.innerHTML = '';
             });
