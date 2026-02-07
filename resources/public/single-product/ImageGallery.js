@@ -28,6 +28,8 @@ export default class ImageGallery {
     #thumbnailControlsWrapper;
     #productId;
     #thumbnailMode = 'all'; // all or by-variants
+    #autoRotationIntervalId = null;
+    #autoRotationDelay = 3500;
 
     init(container, enableZoom = true) {
         this.container = container;
@@ -49,6 +51,7 @@ export default class ImageGallery {
 
         this.#prepareLightboxImages();
         this.#setupThumbnailControls();
+        this.#startAutoRotation();
     }
 
     #listenForVariationChange() {
@@ -62,6 +65,7 @@ export default class ImageGallery {
 
             let controlButtons = this.#thumbnailControlsWrapper?.querySelectorAll(`[data-fluent-cart-thumb-control-button][data-variation-id="${this.#currentlySelectedVariationId}"]`);
             this.#setupControlWrapper(controlButtons);
+            this.#startAutoRotation();
         });
     }
 
@@ -303,10 +307,48 @@ export default class ImageGallery {
 
     #setupThumbnailControls() {
         this.#thumbnailControls.forEach(control => {
-            control.addEventListener('click', (event) => {
+            control.addEventListener('click', () => {
                 this.#handleThumbnailChange(control);
+                this.#restartAutoRotation();
             });
         });
+    }
+
+    #getVisibleThumbnailControls() {
+        return Array.from(this.#thumbnailControls).filter(control => !control.classList.contains('is-hidden'));
+    }
+
+    #restartAutoRotation() {
+        this.#stopAutoRotation();
+        this.#startAutoRotation();
+    }
+
+    #stopAutoRotation() {
+        if (this.#autoRotationIntervalId) {
+            window.clearInterval(this.#autoRotationIntervalId);
+            this.#autoRotationIntervalId = null;
+        }
+    }
+
+    #startAutoRotation() {
+        this.#stopAutoRotation();
+
+        const controls = this.#getVisibleThumbnailControls();
+        if (controls.length <= 1) {
+            return;
+        }
+
+        this.#autoRotationIntervalId = window.setInterval(() => {
+            const visibleControls = this.#getVisibleThumbnailControls();
+            if (visibleControls.length <= 1) {
+                this.#stopAutoRotation();
+                return;
+            }
+
+            const activeIndex = visibleControls.findIndex(control => control.classList.contains('active'));
+            const nextIndex = activeIndex >= 0 ? (activeIndex + 1) % visibleControls.length : 0;
+            this.#handleThumbnailChange(visibleControls[nextIndex]);
+        }, this.#autoRotationDelay);
     }
 
     #handleThumbnailChange(control) {
