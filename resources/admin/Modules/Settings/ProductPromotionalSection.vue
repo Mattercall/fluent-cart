@@ -20,55 +20,47 @@
         </div>
 
         <div v-if="selectedProductId" class="mt-5">
-          <draggable
-            v-model="sections"
-            item-key="uid"
-            handle=".fct-promo-section-drag"
-            ghost-class="fct-promo-section-ghost"
+          <div
+            v-for="(element, index) in sections"
+            :key="element.uid"
+            class="fct-promo-section-card mb-4 p-4 border rounded-lg"
           >
-            <template #item="{ element, index }">
-              <div class="fct-promo-section-card mb-4 p-4 border rounded-lg">
-                <div class="fct-flex fct-items-center fct-justify-between mb-4">
-                  <div class="fct-flex fct-items-center gap-2">
-                    <span class="fct-promo-section-drag" style="cursor: move">⋮⋮</span>
-                    <strong>{{ $t('Section') }} {{ index + 1 }}</strong>
-                  </div>
-                  <el-button type="danger" text @click="removeSection(index)">{{ $t('Delete') }}</el-button>
-                </div>
+            <div class="fct-flex fct-items-center fct-justify-between mb-4">
+              <strong>{{ $t('Section') }} {{ index + 1 }}</strong>
+              <el-button type="danger" text @click="removeSection(index)">{{ $t('Delete') }}</el-button>
+            </div>
 
-                <div class="fct-grid fct-grid-cols-12 gap-4">
-                  <div class="fct-col-span-12 md:fct-col-span-4">
-                    <label class="fct-form-label">{{ $t('Promotional Image') }}</label>
-                    <Attachments
-                      :attachments="getImageAttachments(element)"
-                      :multiple="false"
-                      icon="GalleryAdd"
-                      :title="$t('Add Image')"
-                      @mediaUploaded="(images) => onImageSelect(index, images)"
-                      @removeImage="() => removeImage(index)"
-                    />
-                  </div>
-                  <div class="fct-col-span-12 md:fct-col-span-8">
-                    <div class="mb-4">
-                      <label class="fct-form-label">{{ $t('Heading') }}</label>
-                      <el-input v-model="element.heading" :placeholder="$t('Add heading')" maxlength="120" show-word-limit/>
-                    </div>
-                    <div>
-                      <label class="fct-form-label">{{ $t('Short Description') }}</label>
-                      <el-input
-                        v-model="element.description"
-                        type="textarea"
-                        :rows="5"
-                        maxlength="280"
-                        show-word-limit
-                        :placeholder="$t('Add short description')"
-                      />
-                    </div>
-                  </div>
+            <div class="fct-grid fct-grid-cols-12 gap-4">
+              <div class="fct-col-span-12 md:fct-col-span-4">
+                <label class="fct-form-label">{{ $t('Promotional Image') }}</label>
+                <Attachments
+                  :attachments="getImageAttachments(element)"
+                  :multiple="false"
+                  icon="GalleryAdd"
+                  :title="$t('Add Image')"
+                  @mediaUploaded="(images) => onImageSelect(index, images)"
+                  @removeImage="() => removeImage(index)"
+                />
+              </div>
+              <div class="fct-col-span-12 md:fct-col-span-8">
+                <div class="mb-4">
+                  <label class="fct-form-label">{{ $t('Heading') }}</label>
+                  <el-input v-model="element.heading" :placeholder="$t('Add heading')" maxlength="120" show-word-limit/>
+                </div>
+                <div>
+                  <label class="fct-form-label">{{ $t('Short Description') }}</label>
+                  <el-input
+                    v-model="element.description"
+                    type="textarea"
+                    :rows="5"
+                    maxlength="280"
+                    show-word-limit
+                    :placeholder="$t('Add short description')"
+                  />
                 </div>
               </div>
-            </template>
-          </draggable>
+            </div>
+          </div>
 
           <el-button type="default" @click="addSection">{{ $t('Add Promotional Section') }}</el-button>
 
@@ -83,7 +75,6 @@
 
 <script setup>
 import {onMounted, ref} from 'vue';
-import {VueDraggableNext as draggable} from 'vue-draggable-next';
 import * as Card from '@/Bits/Components/Card/Card.js';
 import Attachments from '@/Bits/Components/Attachment/Attachments.vue';
 import Rest from '@/utils/http/Rest';
