@@ -141,7 +141,6 @@
 }
 
 .fct-gallery-thumb-controls {
-  display: none;
   flex-wrap: wrap;
   @apply flex overflow-y-hidden gap-2 rounded-[4px] p-0;
   &:active::-webkit-scrollbar-thumb,
