@@ -397,9 +397,9 @@ class ProductRenderer
     public function renderGalleryThumbControls()
     {
         $totalThumbImages = Arr::pluck($this->images, 'media.*.url');
+        $firstThumbnailSet = Arr::get($totalThumbImages, '0', []);
 
-        if(count($totalThumbImages) == 1 && count($totalThumbImages[0]) == 1){
-            
+        if (count($totalThumbImages) === 1 && is_countable($firstThumbnailSet) && count($firstThumbnailSet) === 1) {
             return '';
         }
 
