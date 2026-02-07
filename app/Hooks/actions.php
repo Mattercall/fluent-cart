@@ -44,6 +44,9 @@ use FluentCart\Framework\Support\Arr;
 // Turnstile Module Init
 (new \FluentCart\App\Modules\Turnstile\TurnstileInit())->register(\FluentCart\App\App::getInstance());
 
+// Sale Booster Module Init
+(new \FluentCart\App\Modules\SaleBooster\SaleBoosterInit())->register(\FluentCart\App\App::getInstance());
+
 // Register Pro Gateways Promo
 (new \FluentCart\App\Hooks\Handlers\PromoGatewaysHandler())->register();
 
