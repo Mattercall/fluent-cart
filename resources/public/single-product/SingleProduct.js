@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.#itemPrice = this.findOneInContainer('[data-fluent-cart-product-item-price]');
             this.#subscriptionInfo = this.findOneInContainer('[data-fluent-cart-product-payment-type]');
             this.#pricingSection = this.findOneInContainer('[data-fluent-cart-product-pricing-section]');
-            this.#buyNowCounterBadge = this.findOneInContainer('[data-fluent-cart-product-added-to-cart-badge]');
+            this.#buyNowCounterBadge = document.querySelector(`[data-fluent-cart-product-added-to-cart-badge][data-product-id="${this.#productId}"]`);
 
             this.#setupIncreaseButton();
             this.#setupDecreaseButton();
