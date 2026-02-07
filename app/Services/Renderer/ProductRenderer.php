@@ -14,6 +14,7 @@ use FluentCart\App\Http\Routes\WebRoutes;
 use FluentCart\App\Models\ProductVariation;
 use FluentCart\Framework\Support\Collection;
 use FluentCart\App\Modules\Templating\AssetLoader;
+use FluentCart\App\Services\ProductSocialProofService;
 
 class ProductRenderer
 {
@@ -323,8 +324,8 @@ class ProductRenderer
         ?>
         <div class="fct-product-gallery-thumb" role="region"
              aria-label="<?php echo esc_attr($this->product->post_title . ' gallery'); ?>">
-            <span class="fct-product-added-to-cart-badge" data-fluent-cart-product-added-to-cart-badge data-product-id="<?php echo esc_attr($this->product->ID); ?>">
-                <?php echo esc_html(sprintf(__('%d People Added to Cart', 'fluent-cart'), 0)); ?>
+            <span class="fct-product-added-to-cart-badge" data-fluent-cart-product-added-to-cart-badge data-product-id="<?php echo esc_attr($this->product->ID); ?>" data-count="<?php echo esc_attr(ProductSocialProofService::getCount($this->product->ID)); ?>">
+                <?php echo esc_html(sprintf(__('%d People Added to Cart', 'fluent-cart'), ProductSocialProofService::getCount($this->product->ID))); ?>
             </span>
             <img
                     src="<?php echo esc_url($this->defaultImageUrl ?? '') ?>"
@@ -947,6 +948,7 @@ class ProductRenderer
                 'href'                                    => site_url('?fluent-cart=instant_checkout&item_id=') . ($this->defaultVariant ? $this->defaultVariant->id : '') . '&quantity=1',
                 'data-cart-id'                            => $this->defaultVariant ? $this->defaultVariant->id : '',
                 'data-url'                                => site_url('?fluent-cart=instant_checkout&item_id='),
+                'data-product-id'                         => $this->product->ID,
         ];
 
         if ($enableModalCheckout) {
@@ -1010,6 +1012,7 @@ class ProductRenderer
                 'href'                                    => site_url('?fluent-cart=instant_checkout&item_id=') . ($this->defaultVariant ? $this->defaultVariant->id : '') . '&quantity=1',
                 'data-cart-id'                            => $this->defaultVariant ? $this->defaultVariant->id : '',
                 'data-url'                                => site_url('?fluent-cart=instant_checkout&item_id='),
+                'data-product-id'                         => $this->product->ID,
         ];
 
         $target = Arr::get($atts, 'target');
@@ -1066,6 +1069,7 @@ class ProductRenderer
                 'data-fluent-cart-add-to-cart-button' => '',
                 'data-cart-id'                        => $this->defaultVariant ? $this->defaultVariant->id : '',
                 'data-product-id'                     => $this->product->ID,
+                'data-track-social-proof'             => 'yes',
                 'class'                               => 'fluent-cart-add-to-cart-button',
                 'data-variation-type'                 => $this->product->detail->variation_type,
         ];
@@ -1133,6 +1137,7 @@ class ProductRenderer
                 'class'                               => 'wp-block-button__link wp-element-button fct-loader',
                 'data-cart-id'                        => $this->defaultVariant ? $this->defaultVariant->id : '',
                 'data-product-id'                     => $this->product->ID,
+                'data-track-social-proof'             => 'yes',
                 'data-variation-type'                 => $this->product->detail->variation_type,
         ];
 

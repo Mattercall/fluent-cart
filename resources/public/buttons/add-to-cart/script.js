@@ -30,8 +30,10 @@ export default class AddToCartButton {
             target.setAttribute('data-quantity', '1');
 
             const isCustom = target.getAttribute('data-is-custom');
+            const trackSocialProof = target.getAttribute('data-track-social-proof') === 'yes';
+            const socialProofProductId = target.getAttribute('data-product-id');
 
-            window.fluentCartCart?.addProduct(detailsId, quantity, false, true, isCustom).then((response) => {
+            window.fluentCartCart?.addProduct(detailsId, quantity, false, true, isCustom, socialProofProductId, trackSocialProof).then((response) => {
                 setTimeout(() => {
                     target.classList.remove('fct-loading');
                 }, 300);
@@ -45,4 +47,3 @@ export default class AddToCartButton {
         });
     }
 }
-
