@@ -1,6 +1,6 @@
 export default class SingleProductModal {
     #loadingModal = false;
-    #baseUrl = window.fluentCartRestVars.rest.url;
+    #baseUrl = window?.fluentCartRestVars?.rest?.url || '';
     #singleProductViewUrl = '/public/single-product-views';
     #fadeTimeOut = 700;
     #currentModal = null; // Track the currently open modal
