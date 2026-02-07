@@ -2,7 +2,7 @@
 
 namespace FluentCart\App\Hooks\Handlers;
 
-use FluentCart\App\Modules\Data\ProductDataSetup;
+use FluentCart\App\Services\ProductDataSetup;
 use FluentCart\App\Services\Renderer\ProductRenderer;
 
 class ProductPromotionalSectionHandler
@@ -14,7 +14,7 @@ class ProductPromotionalSectionHandler
 
     public function renderSingleProductPromotionalSections($productId)
     {
-        $product = $GLOBALS['fct_product'] ?? ProductDataSetup::getProductModel($productId);
+        $product = ProductDataSetup::getProductModel($productId);
 
         if (!$product || !$product->detail) {
             return;
