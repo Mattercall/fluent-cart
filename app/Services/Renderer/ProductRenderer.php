@@ -200,7 +200,13 @@ class ProductRenderer
         ?>
         <div class="fct-single-product-page" data-fluent-cart-single-product-page>
             <div class="fct-single-product-page-row">
-                <?php $this->renderGallery(); ?>
+                <div class="fct-product-gallery-column">
+                    <?php $this->renderGallery(); ?>
+                    <?php do_action('fluent_cart/product/single/after_gallery', [
+                        'product' => $this->product,
+                        'scope'   => 'single_product_gallery'
+                    ]); ?>
+                </div>
                 <div class="fct-product-summary">
                     <?php
                     $this->renderTitle();
