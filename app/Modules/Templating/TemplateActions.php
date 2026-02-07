@@ -195,6 +195,10 @@ class TemplateActions
             global $post;
             global $wp_query;
 
+            if (!$wp_query || !$post || !is_object($post)) {
+                return $title;
+            }
+
             if (
                 // this is the main query for a single product page
                 $wp_query->is_main_query()
@@ -219,7 +223,11 @@ class TemplateActions
         global $post;
         global $wp_query;
 
-        if (!$wp_query->is_main_query() && $post->post_type !== FluentProducts::CPT_NAME) {
+        if (!$wp_query || !$post || !is_object($post)) {
+            return $content;
+        }
+
+        if (!$wp_query->is_main_query() || $post->post_type !== FluentProducts::CPT_NAME) {
             return $content;
         }
 
