@@ -2,7 +2,7 @@
 
 namespace FluentCart\App\Hooks\Handlers;
 
-use FluentCart\App\Services\ProductDataSetup;
+use FluentCart\App\Modules\Data\ProductDataSetup;
 use FluentCart\App\Services\Renderer\ProductRenderer;
 
 class ProductPromotionalSectionHandler
