@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
         #productId;
         #pricingSection;
         #buyNowCounterBadge;
+        #mediaModal;
+        #mediaModalContents;
 
         toTitleCase(str) {
             return str.replace(
@@ -66,6 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.#subscriptionInfo = this.findOneInContainer('[data-fluent-cart-product-payment-type]');
             this.#pricingSection = this.findOneInContainer('[data-fluent-cart-product-pricing-section]');
             this.#buyNowCounterBadge = document.querySelector(`[data-fluent-cart-product-added-to-cart-badge][data-product-id="${this.#productId}"]`);
+            this.#mediaModal = this.findOneInContainer('[data-fct-media-modal]');
+            this.#mediaModalContents = this.findInContainer('[data-fct-media-modal-content]');
 
             this.#setupIncreaseButton();
             this.#setupDecreaseButton();
@@ -73,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.#setupCartButtons();
             this.#setupVariationButtons();
             this.#setupBuyNowCounter();
+            this.#setupMediaActionControls();
 
             this.#setup();
 
@@ -607,6 +612,93 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             productThumbnail.setAttribute('src', thumbnailUrl);
+        }
+
+        #setupMediaActionControls() {
+            if (!this.#mediaModal) {
+                return;
+            }
+
+            const actionButtons = this.findInContainer('[data-fct-open-media-modal]');
+            const closeButtons = this.findInContainer('[data-fct-media-modal-close]');
+
+            actionButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    this.#openMediaModal(button.dataset.fctOpenMediaModal);
+                });
+            });
+
+            closeButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    this.#closeMediaModal();
+                });
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && this.#mediaModal?.classList.contains('is-open')) {
+                    this.#closeMediaModal();
+                }
+            });
+        }
+
+        #openMediaModal(type) {
+            if (!this.#mediaModal || !type) {
+                return;
+            }
+
+            this.#mediaModalContents.forEach((content) => {
+                content.classList.add('is-hidden');
+            });
+
+            const activeContent = this.findOneInContainer(`[data-fct-media-modal-content="${type}"]`);
+            if (activeContent) {
+                activeContent.classList.remove('is-hidden');
+
+                if (type === 'video') {
+                    this.#renderVideoPlayer(activeContent);
+                }
+            }
+
+            this.#mediaModal.classList.add('is-open');
+            this.#mediaModal.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('fct-media-modal-open');
+        }
+
+        #closeMediaModal() {
+            if (!this.#mediaModal) {
+                return;
+            }
+
+            this.#mediaModal.classList.remove('is-open');
+            this.#mediaModal.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('fct-media-modal-open');
+            this.#resetVideoPlayer();
+        }
+
+        #renderVideoPlayer(content) {
+            const container = content.querySelector('[data-fct-media-video-container]');
+            if (!container) {
+                return;
+            }
+
+            const videoEmbedUrl = content.dataset.videoEmbedUrl;
+            const videoUrl = content.dataset.videoUrl;
+
+            if (videoEmbedUrl) {
+                container.innerHTML = `<iframe src="${videoEmbedUrl}?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+                return;
+            }
+
+            if (videoUrl) {
+                container.innerHTML = `<video controls autoplay playsinline><source src="${videoUrl}"></video>`;
+            }
+        }
+
+        #resetVideoPlayer() {
+            const containers = this.findInContainer('[data-fct-media-video-container]');
+            containers.forEach((container) => {
+                container.innerHTML = '';
+            });
         }
     }
 

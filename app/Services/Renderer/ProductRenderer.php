@@ -339,26 +339,111 @@ class ProductRenderer
 
     public function renderGalleryThumbControls()
     {
-        $totalThumbImages = Arr::pluck($this->images, 'media.*.url');
+        // Thumbnail controls are intentionally hidden on single product page.
+        return '';
+    }
 
-        if(count($totalThumbImages) == 1 && count($totalThumbImages[0]) == 1){
-            
+    protected function getMediaButtonsConfig(): array
+    {
+        $videoUrl = trim((string)$this->storeSettings->get('video_preview_url', ''));
+        $portfolioImageUrl = trim((string)$this->storeSettings->get('portfolio_image_url', ''));
+        $portfolioDescription = trim((string)$this->storeSettings->get('portfolio_description', ''));
+
+        return [
+            'video_url'              => $videoUrl,
+            'video_embed_url'        => $this->getVideoEmbedUrl($videoUrl),
+            'has_video'              => !empty($videoUrl),
+            'portfolio_image_url'    => $portfolioImageUrl,
+            'portfolio_description'  => $portfolioDescription,
+            'has_portfolio'          => !empty($portfolioImageUrl) || !empty($portfolioDescription),
+        ];
+    }
+
+    protected function getVideoEmbedUrl(string $videoUrl): string
+    {
+        if (!$videoUrl) {
             return '';
         }
 
+        $parsed = wp_parse_url($videoUrl);
+        if (!$parsed || empty($parsed['host'])) {
+            return '';
+        }
+
+        $host = strtolower((string)$parsed['host']);
+
+        if (strpos($host, 'youtube.com') !== false) {
+            parse_str((string)Arr::get($parsed, 'query', ''), $queryArgs);
+            $videoId = Arr::get($queryArgs, 'v');
+
+            if (!$videoId && !empty($parsed['path'])) {
+                $pathSegments = explode('/', trim((string)$parsed['path'], '/'));
+                $videoId = end($pathSegments);
+            }
+
+            if ($videoId) {
+                return sprintf('https://www.youtube.com/embed/%s', rawurlencode((string)$videoId));
+            }
+        }
+
+        if (strpos($host, 'youtu.be') !== false && !empty($parsed['path'])) {
+            $videoId = trim((string)$parsed['path'], '/');
+            if ($videoId) {
+                return sprintf('https://www.youtube.com/embed/%s', rawurlencode($videoId));
+            }
+        }
+
+        return '';
+    }
+
+    public function renderMediaActionControls()
+    {
+        $mediaConfig = $this->getMediaButtonsConfig();
+
+        if (!$mediaConfig['has_video'] && !$mediaConfig['has_portfolio']) {
+            return;
+        }
 
         ?>
+        <div class="fct-media-action-controls" data-fluent-cart-media-action-controls>
+            <?php if ($mediaConfig['has_video']): ?>
+                <button type="button" class="fct-media-action-button" data-fct-open-media-modal="video">
+                    <?php echo esc_html__('Video Preview', 'fluent-cart'); ?>
+                </button>
+            <?php endif; ?>
 
-
-
-        <div class="fct-gallery-thumb-controls" data-fluent-cart-single-product-page-product-thumbnail-controls>
-
-            <?php $this->renderGalleryThumbControl(); ?>
-
+            <?php if ($mediaConfig['has_portfolio']): ?>
+                <button type="button" class="fct-media-action-button" data-fct-open-media-modal="portfolio">
+                    <?php echo esc_html__('Portfolio', 'fluent-cart'); ?>
+                </button>
+            <?php endif; ?>
         </div>
 
-        <?php
+        <div class="fct-media-modal" data-fct-media-modal aria-hidden="true" role="dialog" aria-modal="true">
+            <button type="button" class="fct-media-modal-overlay" data-fct-media-modal-close aria-label="<?php echo esc_attr__('Close modal', 'fluent-cart'); ?>"></button>
+            <div class="fct-media-modal-dialog" role="document">
+                <button type="button" class="fct-media-modal-close" data-fct-media-modal-close aria-label="<?php echo esc_attr__('Close modal', 'fluent-cart'); ?>">×</button>
 
+                <?php if ($mediaConfig['has_video']): ?>
+                    <section class="fct-media-modal-content is-hidden" data-fct-media-modal-content="video" data-video-url="<?php echo esc_url($mediaConfig['video_url']); ?>" data-video-embed-url="<?php echo esc_url($mediaConfig['video_embed_url']); ?>">
+                        <div class="fct-media-modal-video-wrapper" data-fct-media-video-container></div>
+                    </section>
+                <?php endif; ?>
+
+                <?php if ($mediaConfig['has_portfolio']): ?>
+                    <section class="fct-media-modal-content is-hidden" data-fct-media-modal-content="portfolio">
+                        <?php if (!empty($mediaConfig['portfolio_image_url'])): ?>
+                            <img src="<?php echo esc_url($mediaConfig['portfolio_image_url']); ?>" alt="<?php echo esc_attr__('Portfolio image', 'fluent-cart'); ?>" class="fct-media-modal-portfolio-image"/>
+                        <?php endif; ?>
+
+                        <?php if (!empty($mediaConfig['portfolio_description'])): ?>
+                            <p class="fct-media-modal-portfolio-description"><?php echo esc_html($mediaConfig['portfolio_description']); ?></p>
+                        <?php endif; ?>
+                    </section>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php
     }
 
     public function renderGalleryThumbControl()
@@ -439,7 +524,7 @@ class ProductRenderer
 
         <div <?php RenderHelper::renderAtts($wrapperAtts); ?>>
             <?php $this->renderGalleryThumb(); ?>
-            <?php $this->renderGalleryThumbControls(); ?>
+            <?php $this->renderMediaActionControls(); ?>
         </div>
 
         <?php

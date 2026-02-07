@@ -79,6 +79,9 @@ class StoreSettings implements ArrayableInterface
             'order_mode'                           => 'test',
             'variation_view'                       => 'both',
             'variation_columns'                    => 'masonry',
+            'video_preview_url'                    => '',
+            'portfolio_image_url'                  => '',
+            'portfolio_description'                => '',
             'modules_settings'                     => [],
             'min_receipt_number'                   => '1',
             'inv_prefix'                           => 'INV-'
@@ -801,6 +804,54 @@ class StoreSettings implements ArrayableInterface
                             ],
 
                             'hr_image_zoom' => [
+                                'type'  => 'html',
+                                'value' => '<hr class="settings-divider">'
+                            ],
+
+                            'media_buttons_grid' => [
+                                'type'            => 'grid',
+                                'columns'         => [
+                                    'default' => 1,
+                                    'md'      => 3
+                                ],
+                                'disable_nesting' => true,
+                                'schema'          => [
+                                    'label'  => [
+                                        'type'  => 'html',
+                                        'value' => '<span class="setting-label">' . __('Product Media Buttons', 'fluent-cart') . '</span>
+                                                            <div class="form-note">' . __('Configure optional Video Preview and Portfolio buttons for single product pages.', 'fluent-cart') . '</div>'
+                                    ],
+                                    'fields' => [
+                                        'type'            => 'grid',
+                                        'columns'         => [
+                                            'default' => 1,
+                                            'md'      => 1
+                                        ],
+                                        'disable_nesting' => true,
+                                        'schema'          => [
+                                            'video_preview_url'     => [
+                                                'label' => __('Video Preview URL', 'fluent-cart'),
+                                                'type'  => 'input',
+                                                'value' => '',
+                                                'note'  => "<div class='pl-6'>" . __('Supports YouTube links or direct .mp4 URLs.', 'fluent-cart') . "</div>"
+                                            ],
+                                            'portfolio_image_url'   => [
+                                                'label' => __('Portfolio Image URL', 'fluent-cart'),
+                                                'type'  => 'input',
+                                                'value' => ''
+                                            ],
+                                            'portfolio_description' => [
+                                                'label' => __('Portfolio Description', 'fluent-cart'),
+                                                'type'  => 'textarea',
+                                                'value' => ''
+                                            ],
+                                        ]
+                                    ]
+
+                                ]
+                            ],
+
+                            'hr_media_buttons' => [
                                 'type'  => 'html',
                                 'value' => '<hr class="settings-divider">'
                             ],
