@@ -32,6 +32,7 @@ use FluentCart\Framework\Support\Arr;
 (new \FluentCart\App\Hooks\Handlers\RetentionSnapshotHandler)->register();
 (new \FluentCart\App\Hooks\Handlers\CustomerReviewHandler)->register();
 (new \FluentCart\App\Hooks\Handlers\ProductFaqHandler)->register();
+(new \FluentCart\App\Hooks\Handlers\ProductPromotionalSectionHandler)->register();
 
 (new \FluentCart\App\Hooks\Handlers\ShortCodes\ShopAppHandler)->register();
 (new \FluentCart\App\Hooks\Handlers\ExportHandler)->register();

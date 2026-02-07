@@ -218,14 +218,12 @@ class ProductRenderer
                     ?>
                 </div>
             </div>
-
-            <?php $this->renderPromotionalSection(); ?>
         </div>
         <?php
     }
 
 
-    private function renderPromotionalSection()
+    public function renderPromotionalSection()
     {
         $settings = get_post_meta($this->product->ID, '_fc_product_promotional_section', true);
 
@@ -233,32 +231,52 @@ class ProductRenderer
             return;
         }
 
-        $image = Arr::get($settings, 'image', []);
-        $imageUrl = esc_url(Arr::get($image, 'url', ''));
-        $imageAlt = esc_attr(Arr::get($image, 'title', $this->product->post_title));
-        $heading = sanitize_text_field(Arr::get($settings, 'heading', ''));
-        $description = sanitize_textarea_field(Arr::get($settings, 'description', ''));
+        // Backward compatibility for old single-section settings.
+        if (isset($settings['image']) || isset($settings['heading']) || isset($settings['description'])) {
+            $settings = [$settings];
+        }
 
-        if (empty($imageUrl) && empty($heading) && empty($description)) {
+        $sections = array_filter($settings, function ($section) {
+            if (!is_array($section)) {
+                return false;
+            }
+
+            $image = Arr::get($section, 'image', []);
+            $imageUrl = esc_url(Arr::get($image, 'url', ''));
+            $heading = sanitize_text_field(Arr::get($section, 'heading', ''));
+            $description = sanitize_textarea_field(Arr::get($section, 'description', ''));
+
+            return !(empty($imageUrl) && empty($heading) && empty($description));
+        });
+
+        if (empty($sections)) {
             return;
         }
-        ?>
-        <div class="fct-product-promotional-section" data-fluent-cart-promotional-section>
-            <?php if (!empty($imageUrl)) : ?>
-                <div class="fct-product-promotional-image-wrap">
-                    <img src="<?php echo esc_url($imageUrl); ?>" alt="<?php echo esc_attr($imageAlt); ?>" class="fct-product-promotional-image" />
+
+        foreach ($sections as $section) {
+            $image = Arr::get($section, 'image', []);
+            $imageUrl = esc_url(Arr::get($image, 'url', ''));
+            $imageAlt = esc_attr(Arr::get($image, 'title', $this->product->post_title));
+            $heading = sanitize_text_field(Arr::get($section, 'heading', ''));
+            $description = sanitize_textarea_field(Arr::get($section, 'description', ''));
+            ?>
+            <div class="fct-product-promotional-section" data-fluent-cart-promotional-section>
+                <?php if (!empty($imageUrl)) : ?>
+                    <div class="fct-product-promotional-image-wrap">
+                        <img src="<?php echo esc_url($imageUrl); ?>" alt="<?php echo esc_attr($imageAlt); ?>" class="fct-product-promotional-image" />
+                    </div>
+                <?php endif; ?>
+                <div class="fct-product-promotional-content">
+                    <?php if (!empty($heading)) : ?>
+                        <h3 class="fct-product-promotional-heading"><?php echo esc_html($heading); ?></h3>
+                    <?php endif; ?>
+                    <?php if (!empty($description)) : ?>
+                        <p class="fct-product-promotional-description"><?php echo esc_html($description); ?></p>
+                    <?php endif; ?>
                 </div>
-            <?php endif; ?>
-            <div class="fct-product-promotional-content">
-                <?php if (!empty($heading)) : ?>
-                    <h3 class="fct-product-promotional-heading"><?php echo esc_html($heading); ?></h3>
-                <?php endif; ?>
-                <?php if (!empty($description)) : ?>
-                    <p class="fct-product-promotional-description"><?php echo esc_html($description); ?></p>
-                <?php endif; ?>
             </div>
-        </div>
-        <?php
+            <?php
+        }
     }
 
     public function renderBuySectionWrapperStart()
