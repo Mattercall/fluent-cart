@@ -529,7 +529,8 @@ document.addEventListener('DOMContentLoaded', () => {
         #setupBuyNowCounter() {
             this.#renderBuyNowCounter();
 
-            this.#buyNowButtons.forEach(button => {
+            const counterButtons = [...this.#buyNowButtons, ...this.#addToCartButtons];
+            counterButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     this.#incrementBuyNowCounter();
                 });
