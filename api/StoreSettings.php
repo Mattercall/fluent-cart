@@ -818,8 +818,8 @@ class StoreSettings implements ArrayableInterface
                                 'schema'          => [
                                     'label'  => [
                                         'type'  => 'html',
-                                        'value' => '<span class="setting-label">' . __('Product Media Buttons', 'fluent-cart') . '</span>
-                                                            <div class="form-note">' . __('Configure optional Video Preview and Portfolio buttons for single product pages.', 'fluent-cart') . '</div>'
+                                        'value' => '<span class="setting-label">' . __('Sale Booster', 'fluent-cart') . '</span>
+                                                            <div class="form-note">' . __('Configure the optional Video Preview and Portfolio product buttons for single product pages.', 'fluent-cart') . '</div>'
                                     ],
                                     'fields' => [
                                         'type'            => 'grid',
@@ -830,13 +830,13 @@ class StoreSettings implements ArrayableInterface
                                         'disable_nesting' => true,
                                         'schema'          => [
                                             'video_preview_url'     => [
-                                                'label' => __('Video Preview URL', 'fluent-cart'),
+                                                'label' => __('Video Preview Button URL', 'fluent-cart'),
                                                 'type'  => 'input',
                                                 'value' => '',
                                                 'note'  => "<div class='pl-6'>" . __('Supports YouTube links or direct .mp4 URLs.', 'fluent-cart') . "</div>"
                                             ],
                                             'portfolio_image_url'   => [
-                                                'label' => __('Portfolio Image URL', 'fluent-cart'),
+                                                'label' => __('Portfolio Button Image URL', 'fluent-cart'),
                                                 'type'  => 'input',
                                                 'value' => ''
                                             ],
