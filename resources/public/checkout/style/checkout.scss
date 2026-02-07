@@ -1150,8 +1150,16 @@ ul.fct_summary_items_list {
 /*====== place order button  =======*/
 .fct_place_order_btn {
   @apply w-full;
-  background-color: #000;
-  border-color: #000;
+  background-color: #000 !important;
+  border-color: #000 !important;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: #000 !important;
+    border-color: #000 !important;
+  }
+
   &.medium {
     @apply min-h-[38px] py-2.5;
   }
