@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             this.#stickyBuyNowVisibilityObserver = new IntersectionObserver((entries) => {
                 const entry = entries[0];
-                const shouldShow = !entry?.isIntersecting;
+                const shouldShow = (entry?.boundingClientRect?.bottom || 0) <= 0;
                 this.#toggleStickyBuyNowButton(shouldShow);
             }, {
                 threshold: 0
@@ -200,8 +200,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const rect = sourceButton.getBoundingClientRect();
-            const isVisibleInViewport = rect.top < window.innerHeight && rect.bottom > 0;
-            this.#toggleStickyBuyNowButton(!isVisibleInViewport);
+            const hasScrolledPastSourceButton = rect.bottom <= 0;
+            this.#toggleStickyBuyNowButton(hasScrolledPastSourceButton);
         }
 
         #toggleStickyBuyNowButton(shouldShow) {
