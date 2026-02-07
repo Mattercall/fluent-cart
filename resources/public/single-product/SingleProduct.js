@@ -74,9 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
             this.#setupVariationButtons();
             this.#setupBuyNowCounter();
 
-            this.#updateAddToCartQuantity();
-            this.#updateBuyNowButtonUrl();
-
             this.#setup();
 
             this.#initTabOnDemand();
@@ -224,8 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             this.#buyNowButtons.forEach(button => {
                 if (status !== st) {
-                    const quantity = 1;
-                    button.setAttribute('data-quantity', String(quantity));
+                    const quantity = button.dataset.quantity;
                     let url = button.getAttribute('data-url') + cartId + '&quantity=' + quantity + '&track_social_proof=yes&product_id=' + encodeURIComponent(this.#productId || '');
                     button.setAttribute('href', url);
                     button.setAttribute('data-cart-id', cartId);
@@ -240,10 +236,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        #updateBuyNowButtonUrl() {
-            const quantity = 1;
+        #updateBuyNowButtonUrl(quantity) {
             this.#buyNowButtons.forEach(button => {
-                button.setAttribute('data-quantity', String(quantity));
+                button.setAttribute('data-quantity', quantity);
                 const cartId = button.getAttribute('data-cart-id');
                 if (cartId) {
                     let url = button.getAttribute('data-url') + cartId + '&quantity=' + quantity + '&track_social_proof=yes&product_id=' + encodeURIComponent(this.#productId || '');
@@ -252,10 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        #updateAddToCartQuantity() {
-            const quantity = 1;
+        #updateAddToCartQuantity(quantity) {
             this.#addToCartButtons.forEach(button => {
-                button.setAttribute('data-quantity', String(quantity));
+                button.setAttribute('data-quantity', quantity);
             });
         }
 
@@ -506,8 +500,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Update the quantity input field with the validated value
                 this.#quantity.value = quantity;
-                this.#updateBuyNowButtonUrl();
-                this.#updateAddToCartQuantity();
+                this.#updateBuyNowButtonUrl(quantity);
+                this.#updateAddToCartQuantity(quantity);
             });
         }
 
