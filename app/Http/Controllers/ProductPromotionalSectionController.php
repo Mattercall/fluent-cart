@@ -57,25 +57,9 @@ class ProductPromotionalSectionController extends Controller
             ], 422);
         }
 
-        $image = $request->get('image');
-        $heading = sanitize_text_field($request->get('heading', ''));
-        $description = sanitize_textarea_field($request->get('description', ''));
+        $sections = $this->sanitizeSections($request->get('sections', []));
 
-        $imageId = absint(is_array($image) ? ($image['id'] ?? 0) : 0);
-        $imageUrl = esc_url_raw(is_array($image) ? ($image['url'] ?? '') : '');
-        $imageTitle = sanitize_text_field(is_array($image) ? ($image['title'] ?? '') : '');
-
-        $settings = [
-            'image'       => [
-                'id'    => $imageId,
-                'url'   => $imageUrl,
-                'title' => $imageTitle,
-            ],
-            'heading'     => $heading,
-            'description' => $description,
-        ];
-
-        update_post_meta($productId, '_fc_product_promotional_section', $settings);
+        update_post_meta($productId, '_fc_product_promotional_section', $sections);
 
         return [
             'message'  => __('Promotional section saved successfully.', 'fluent-cart'),
@@ -91,14 +75,46 @@ class ProductPromotionalSectionController extends Controller
             $settings = [];
         }
 
-        return [
-            'image'       => [
-                'id'    => absint($settings['image']['id'] ?? 0),
-                'url'   => esc_url_raw($settings['image']['url'] ?? ''),
-                'title' => sanitize_text_field($settings['image']['title'] ?? ''),
-            ],
-            'heading'     => sanitize_text_field($settings['heading'] ?? ''),
-            'description' => sanitize_textarea_field($settings['description'] ?? ''),
-        ];
+        // Keep backward compatibility for previously saved single section array.
+        if (isset($settings['image']) || isset($settings['heading']) || isset($settings['description'])) {
+            $settings = [$settings];
+        }
+
+        return $this->sanitizeSections($settings);
+    }
+
+    private function sanitizeSections($sections)
+    {
+        if (!is_array($sections)) {
+            return [];
+        }
+
+        $sanitizedSections = [];
+
+        foreach ($sections as $section) {
+            if (!is_array($section)) {
+                continue;
+            }
+
+            $image = $section['image'] ?? [];
+
+            $sanitizedSection = [
+                'image'       => [
+                    'id'    => absint(is_array($image) ? ($image['id'] ?? 0) : 0),
+                    'url'   => esc_url_raw(is_array($image) ? ($image['url'] ?? '') : ''),
+                    'title' => sanitize_text_field(is_array($image) ? ($image['title'] ?? '') : ''),
+                ],
+                'heading'     => sanitize_text_field($section['heading'] ?? ''),
+                'description' => sanitize_textarea_field($section['description'] ?? ''),
+            ];
+
+            if (empty($sanitizedSection['image']['url']) && empty($sanitizedSection['heading']) && empty($sanitizedSection['description'])) {
+                continue;
+            }
+
+            $sanitizedSections[] = $sanitizedSection;
+        }
+
+        return array_values($sanitizedSections);
     }
 }
