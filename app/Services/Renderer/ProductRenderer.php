@@ -828,77 +828,7 @@ class ProductRenderer
 
     public function renderQuantity()
     {
-        $soldIndividually = $this->product->soldIndividually();
-
-        if (!$this->hasOnetime || $soldIndividually) {
-            return;
-        }
-
-        $attributes = [
-                'data-fluent-cart-product-quantity-container' => '',
-                'data-cart-id'                                => $this->defaultVariant ? $this->defaultVariant->id : '',
-                'data-variation-type'                         => $this->product->detail->variation_type,
-                'data-payment-type'                           => 'onetime',
-                'class'                                       => 'fct-product-quantity-container'
-        ];
-
-        $defaultVariantData = $this->getDefaultVariantData();
-
-        if ($this->hasSubscription && Arr::get($defaultVariantData, 'payment_type') !== 'onetime') {
-            $attributes['class'] .= ' is-hidden';
-        }
-
-        do_action('fluent_cart/product/single/before_quantity_block', [
-                'product' => $this->product,
-                'scope'   => 'product_quantity_block'
-        ]);
-        ?>
-        <div <?php $this->renderAttributes($attributes); ?>>
-            <label for="fct-product-qty-input" class="quantity-title">
-                <?php esc_html_e('Quantity', 'fluent-cart'); ?>
-            </label>
-
-            <div class="fct-product-quantity">
-                <button class="fct-quantity-decrease-button"
-                        data-fluent-cart-product-qty-decrease-button
-                        title="<?php esc_html_e('Decrease Quantity', 'fluent-cart'); ?>"
-                        aria-label="<?php esc_attr_e('Decrease Quantity', 'fluent-cart'); ?>"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="2" viewBox="0 0 14 2" fill="none">
-                        <path d="M12.3333 1L1.66659 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                              stroke-linejoin="round"></path>
-                    </svg>
-                </button>
-
-                <input
-                        id="fct-product-qty-input"
-                        min="1"
-                        <?php echo $soldIndividually ? 'max="1"' : ''; ?>
-                        class="fct-quantity-input"
-                        data-fluent-cart-single-product-page-product-quantity-input
-                        type="text"
-                        placeholder="<?php esc_attr_e('Quantity', 'fluent-cart'); ?>"
-                        value="1"
-                        aria-label="<?php esc_attr_e('Product quantity', 'fluent-cart'); ?>"
-                />
-
-                <button class="fct-quantity-increase-button"
-                        data-fluent-cart-product-qty-increase-button
-                        title="<?php esc_attr_e('Increase Quantity', 'fluent-cart'); ?>"
-                        aria-label="<?php esc_attr_e('Increase Quantity', 'fluent-cart'); ?>"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path d="M6.99996 1.66666L6.99996 12.3333M12.3333 6.99999L1.66663 6.99999" stroke="currentColor"
-                              stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <?php
-        do_action('fluent_cart/product/single/after_quantity_block', [
-                'product' => $this->product,
-                'scope'   => 'product_quantity_block'
-        ]);
+        return;
     }
 
     public function renderPurchaseButtons($atts = [])
