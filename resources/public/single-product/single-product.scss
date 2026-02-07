@@ -504,7 +504,17 @@
 }
 
 .fct-product-promotional-section {
-  @apply grid grid-cols-1 md:grid-cols-2 gap-8 items-center mt-12 p-6 rounded-2xl border border-gray-200 bg-white;
+  @apply grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center mt-12 p-8 md:p-10 rounded-2xl border border-gray-200 bg-white;
+}
+
+.fct-product-promotional-section:nth-of-type(even) {
+  .fct-product-promotional-image-wrap {
+    @apply md:order-2;
+  }
+
+  .fct-product-promotional-content {
+    @apply md:order-1;
+  }
 }
 
 .fct-product-promotional-image-wrap {
@@ -512,14 +522,18 @@
 }
 
 .fct-product-promotional-image {
-  @apply w-full h-auto rounded-xl block;
+  @apply w-full h-auto rounded-xl block border border-gray-200 shadow-sm;
+}
+
+.fct-product-promotional-content {
+  @apply max-w-2xl;
 }
 
 .fct-product-promotional-heading {
   margin: 0 0 12px;
   font-size: 32px;
   line-height: 1.2;
-  font-weight: 600;
+  font-weight: 700;
   color: #111827;
 }
 
