@@ -848,6 +848,10 @@ class ProductRenderer
             $attributes['class'] .= ' is-hidden';
         }
 
+        // Keep rendering the quantity block so existing hooks/actions continue to run,
+        // while hiding only the quantity UI on the single product page.
+        $attributes['class'] .= ' is-hidden';
+
         do_action('fluent_cart/product/single/before_quantity_block', [
                 'product' => $this->product,
                 'scope'   => 'product_quantity_block'
