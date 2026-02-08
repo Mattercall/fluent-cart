@@ -190,6 +190,7 @@ class ProductRequest extends RequestGuard
             'detail.other_info.sold_individually'  => 'nullable|sanitizeText|in:yes,no',
             'detail.other_info.use_pricing_table' => 'nullable|sanitizeText',
             'detail.other_info.checkout_note_label' => 'nullable|sanitizeText|maxLength:200',
+            'detail.other_info.delivery_between'  => 'nullable|sanitizeText|maxLength:100',
             'detail.other_info.shipping_class'    => ['nullable', function ($attribute, $value) {
                 return $this->validateShippingClassId($attribute, $value);
             }],
@@ -342,6 +343,7 @@ class ProductRequest extends RequestGuard
             'detail.other_info.sold_individually'  => 'sanitize_text_field',
             'detail.other_info.use_pricing_table' => 'sanitize_text_field',
             'detail.other_info.checkout_note_label' => 'sanitize_text_field',
+            'detail.other_info.delivery_between'  => 'sanitize_text_field',
             'detail.other_info.shipping_class'    => 'intval',
             'detail.other_info.tax_class'         => 'intval',
             'detail.other_info.active_editor'     => 'sanitize_text_field',
