@@ -14,10 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
         #decreaseButton;
         #addToCartButtons;
         #buyNowButtons;
-        #primaryBuyNowButton;
-        #stickyBuyNowButton;
-        #buyNowButtonObserver;
-        #isPrimaryBuyNowVisible = true;
         #thumbnailControls;
         #thumbnailControlsWrapper;
         #tab;
@@ -64,8 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
             this.#quantityContainer = this.findOneInContainer('[data-fluent-cart-product-quantity-container]');
             this.#addToCartButtons = this.findInContainer('[data-fluent-cart-add-to-cart-button]');
             this.#buyNowButtons = this.findInContainer('[data-fluent-cart-direct-checkout-button]');
-            this.#setupStickyBuyNowButton();
-            this.#buyNowButtons = this.findInContainer('[data-fluent-cart-direct-checkout-button]');
             this.#thumbnailControls = this.findInContainer('[data-fluent-cart-thumb-control-button]');
             this.#thumbnailControlsWrapper = this.findOneInContainer('[data-fluent-cart-single-product-page-product-thumbnail-controls]');
             this.#itemPrice = this.findOneInContainer('[data-fluent-cart-product-item-price]');
@@ -95,64 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         #listenWindowResize() {
             window.addEventListener('resize', _ => {
                 this.#setMobileViewClass();
-                this.#updateStickyBuyNowVisibility();
             });
-        }
-
-        #setupStickyBuyNowButton() {
-            const buttonsWrap = this.findOneInContainer('.fct-product-buttons-wrap');
-            const originalBuyNowButton = buttonsWrap?.querySelector('[data-fluent-cart-direct-checkout-button]');
-
-            if (!originalBuyNowButton) {
-                return;
-            }
-
-            this.#primaryBuyNowButton = originalBuyNowButton;
-
-            const stickyButton = originalBuyNowButton.cloneNode(true);
-            stickyButton.classList.add('fct-mobile-sticky-buy-now-button');
-            stickyButton.classList.remove('is-visible');
-            stickyButton.setAttribute('data-fluent-cart-mobile-sticky-buy-now-button', '');
-
-            this.#container.appendChild(stickyButton);
-            this.#stickyBuyNowButton = stickyButton;
-
-            if (!window.IntersectionObserver) {
-                return;
-            }
-
-            this.#buyNowButtonObserver = new IntersectionObserver(entries => {
-                const entry = entries[0];
-                if (!entry) {
-                    return;
-                }
-
-                this.#isPrimaryBuyNowVisible = entry.isIntersecting;
-                this.#updateStickyBuyNowVisibility(entry.isIntersecting);
-            }, {
-                threshold: 0.2
-            });
-
-            this.#buyNowButtonObserver.observe(originalBuyNowButton);
-            this.#updateStickyBuyNowVisibility();
-        }
-
-        #isMobileViewport() {
-            return window.matchMedia('(max-width: 767px)').matches;
-        }
-
-        #updateStickyBuyNowVisibility(isPrimaryVisible = this.#isPrimaryBuyNowVisible) {
-            if (!this.#stickyBuyNowButton || !this.#primaryBuyNowButton) {
-                return;
-            }
-
-            const shouldHide = !this.#isMobileViewport() ||
-                isPrimaryVisible ||
-                this.#primaryBuyNowButton.classList.contains('is-hidden') ||
-                this.#primaryBuyNowButton.hasAttribute('disabled') ||
-                !this.#primaryBuyNowButton.getAttribute('href');
-
-            this.#stickyBuyNowButton.classList.toggle('is-visible', !shouldHide);
         }
 
         #setMobileViewClass() {
@@ -297,8 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     button.setAttribute('disabled', 'disabled');
                 }
             });
-
-            this.#updateStickyBuyNowVisibility();
         }
 
         #updateBuyNowButtonUrl(quantity) {
@@ -471,8 +406,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 this.#buyNowButtons.forEach(button => button.classList.remove('is-hidden'));
             }
-
-            this.#updateStickyBuyNowVisibility();
         }
 
         #setupIncreaseButton() {
