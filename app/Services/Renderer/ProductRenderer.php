@@ -316,6 +316,11 @@ class ProductRenderer
         <div class="<?php echo esc_attr(implode(' ', $buttonsWrapClasses)); ?>">
             <?php $this->renderPurchaseButtons(Arr::get($atts, 'button_atts', [])); ?>
         </div>
+        <div class="fct-mobile-sticky-buy-now" data-fluent-cart-mobile-sticky-buy-now>
+            <?php $this->renderBuyNowButton([
+                    'class' => 'fct-mobile-sticky-buy-now-button'
+            ]); ?>
+        </div>
         <?php
         $this->renderBuySectionWrapperEnd();
     }
@@ -1011,6 +1016,11 @@ class ProductRenderer
                 'data-url'                                => site_url('?fluent-cart=instant_checkout&item_id='),
                 'data-product-id'                         => $this->product->ID,
         ];
+
+        $customClass = Arr::get($atts, 'class');
+        if ($customClass) {
+            $buyNowAttributes['class'] = trim($buyNowAttributes['class'] . ' ' . $customClass);
+        }
 
         if ($enableModalCheckout) {
             $buyNowAttributes['data-fct-instant-checkout-button'] = '';

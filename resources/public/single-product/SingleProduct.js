@@ -24,6 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
         #productId;
         #pricingSection;
         #buyNowCounterBadge;
+        #stickyBuyNowWrap;
+        #primaryBuyNowButton;
+        #buyNowButtonObserver;
 
         toTitleCase(str) {
             return str.replace(
@@ -60,6 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.#quantityContainer = this.findOneInContainer('[data-fluent-cart-product-quantity-container]');
             this.#addToCartButtons = this.findInContainer('[data-fluent-cart-add-to-cart-button]');
             this.#buyNowButtons = this.findInContainer('[data-fluent-cart-direct-checkout-button]');
+            this.#stickyBuyNowWrap = this.findOneInContainer('[data-fluent-cart-mobile-sticky-buy-now]');
+            this.#primaryBuyNowButton = this.findOneInContainer('.fct-product-buttons-wrap [data-fluent-cart-direct-checkout-button]');
             this.#thumbnailControls = this.findInContainer('[data-fluent-cart-thumb-control-button]');
             this.#thumbnailControlsWrapper = this.findOneInContainer('[data-fluent-cart-single-product-page-product-thumbnail-controls]');
             this.#itemPrice = this.findOneInContainer('[data-fluent-cart-product-item-price]');
@@ -73,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.#setupCartButtons();
             this.#setupVariationButtons();
             this.#setupBuyNowCounter();
+            this.#setupMobileStickyBuyNow();
 
             this.#setup();
 
@@ -89,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         #listenWindowResize() {
             window.addEventListener('resize', _ => {
                 this.#setMobileViewClass();
+                this.#updateMobileStickyBuyNowState();
             });
         }
 
@@ -100,6 +107,61 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 productPage.classList.remove('is-mobile');
             }
+        }
+
+        #setupMobileStickyBuyNow() {
+            if (!this.#stickyBuyNowWrap || !this.#primaryBuyNowButton) {
+                return;
+            }
+
+            if (typeof IntersectionObserver === 'undefined') {
+                return;
+            }
+
+            this.#buyNowButtonObserver = new IntersectionObserver((entries) => {
+                const [entry] = entries;
+                this.#updateMobileStickyBuyNowState(entry?.isIntersecting);
+            }, {
+                threshold: 0.1
+            });
+
+            this.#buyNowButtonObserver.observe(this.#primaryBuyNowButton);
+            this.#updateMobileStickyBuyNowState();
+        }
+
+        #updateMobileStickyBuyNowState(isPrimaryButtonVisible = null) {
+            if (!this.#stickyBuyNowWrap || !this.#primaryBuyNowButton) {
+                return;
+            }
+
+            const isMobileViewport = window.matchMedia('(max-width: 768px)').matches;
+            const isPrimaryButtonHidden = this.#primaryBuyNowButton.classList.contains('is-hidden');
+
+            if (!isMobileViewport || isPrimaryButtonHidden) {
+                this.#stickyBuyNowWrap.classList.remove('is-active');
+                return;
+            }
+
+            const visible = typeof isPrimaryButtonVisible === 'boolean'
+                ? isPrimaryButtonVisible
+                : this.#isElementInViewport(this.#primaryBuyNowButton);
+
+            if (visible) {
+                this.#stickyBuyNowWrap.classList.remove('is-active');
+            } else {
+                this.#stickyBuyNowWrap.classList.add('is-active');
+            }
+        }
+
+        #isElementInViewport(element) {
+            if (!element) {
+                return false;
+            }
+
+            const rect = element.getBoundingClientRect();
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+            return rect.top < viewportHeight && rect.bottom > 0;
         }
 
         #getImageIndexFromAlbum(album, imageSrc) {
@@ -234,6 +296,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     button.setAttribute('disabled', 'disabled');
                 }
             });
+
+            this.#updateMobileStickyBuyNowState();
         }
 
         #updateBuyNowButtonUrl(quantity) {
@@ -406,6 +470,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 this.#buyNowButtons.forEach(button => button.classList.remove('is-hidden'));
             }
+
+            this.#updateMobileStickyBuyNowState();
         }
 
         #setupIncreaseButton() {
