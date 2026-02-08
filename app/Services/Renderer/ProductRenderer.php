@@ -1053,7 +1053,7 @@ class ProductRenderer
 //        }
 
         $defaults = [
-                'buy_now_text'     => __('Buy Now', 'fluent-cart'),
+                'buy_now_text'     => __('Order Now', 'fluent-cart'),
                 'add_to_cart_text' => __('Add To Cart', 'fluent-cart'),
         ];
 
@@ -1105,7 +1105,7 @@ class ProductRenderer
 
     public function renderBuyNowButtonBlock($atts = [])
     {
-        $text = Arr::get($atts, 'text', __('Buy Now', 'fluent-cart'));
+        $text = Arr::get($atts, 'text', __('Order Now', 'fluent-cart'));
 
 
         // Stock management check using isStock() method

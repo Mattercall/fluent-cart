@@ -489,6 +489,10 @@
 .fct-product-buttons-wrap {
   @apply grid grid-cols-2 gap-3 mt-7.5;
 
+  .fluent-cart-direct-checkout-button {
+    @apply text-base font-semibold;
+  }
+
   &.fct-product-buttons-wrap-full-width-buy-now {
     .fluent-cart-direct-checkout-button {
       @apply col-span-2 w-full;
@@ -594,4 +598,10 @@
   font-size: 16px;
   line-height: 1.75;
   color: #4b5563;
+}
+
+
+.single_add_to_cart_button {
+  font-size: 16px;
+  font-weight: 600;
 }
