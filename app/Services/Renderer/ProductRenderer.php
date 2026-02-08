@@ -316,6 +316,7 @@ class ProductRenderer
         <div class="<?php echo esc_attr(implode(' ', $buttonsWrapClasses)); ?>">
             <?php $this->renderPurchaseButtons(Arr::get($atts, 'button_atts', [])); ?>
         </div>
+        <?php $this->renderDeliveryInfoSection(); ?>
         <div class="fct-mobile-sticky-buy-now" data-fluent-cart-mobile-sticky-buy-now>
             <?php $this->renderBuyNowButton([
                     'class' => 'fct-mobile-sticky-buy-now-button'
@@ -325,6 +326,71 @@ class ProductRenderer
         $this->renderBuySectionWrapperEnd();
     }
 
+
+    protected function getDeliveryRangeDays()
+    {
+        $deliveryBetween = trim((string)Arr::get($this->product->detail, 'other_info.delivery_between', ''));
+
+        if (!$deliveryBetween) {
+            return null;
+        }
+
+        preg_match_all('/\d+/', $deliveryBetween, $matches);
+        $numbers = array_map('intval', Arr::get($matches, '0', []));
+
+        if (empty($numbers)) {
+            return null;
+        }
+
+        $minDays = $numbers[0];
+        $maxDays = Arr::get($numbers, '1', $minDays);
+
+        if ($maxDays < $minDays) {
+            [$minDays, $maxDays] = [$maxDays, $minDays];
+        }
+
+        return [
+                'min' => max(0, $minDays),
+                'max' => max(0, $maxDays),
+        ];
+    }
+
+    protected function renderDeliveryInfoSection()
+    {
+        $deliveryRange = $this->getDeliveryRangeDays();
+
+        if (!$deliveryRange) {
+            return;
+        }
+
+        $todayTimestamp = current_time('timestamp');
+        $minDeliveryTimestamp = $todayTimestamp + ($deliveryRange['min'] * DAY_IN_SECONDS);
+        $maxDeliveryTimestamp = $todayTimestamp + ($deliveryRange['max'] * DAY_IN_SECONDS);
+
+        $minDate = wp_date('D, M j', $minDeliveryTimestamp);
+        $maxDate = wp_date('D, M j', $maxDeliveryTimestamp);
+        ?>
+        <div class="fct-product-info-labels" data-fluent-cart-product-info-labels>
+            <div class="fct-product-info-label fct-product-delivery-label">
+                <span class="fct-product-info-label-icon" aria-hidden="true">🚚</span>
+                <p>
+                    <?php
+                    echo esc_html(sprintf(
+                            __('Delivery between %1$s and %2$s if payment is received today.', 'fluent-cart'),
+                            $minDate,
+                            $maxDate
+                    ));
+                    ?>
+                </p>
+            </div>
+
+            <div class="fct-product-info-label fct-product-buyer-protection-label">
+                <span class="fct-product-info-label-icon" aria-hidden="true">🛡️</span>
+                <p><?php echo esc_html__('MatterCall Buyer Protection – Money back if there is something wrong with this service.', 'fluent-cart'); ?></p>
+            </div>
+        </div>
+        <?php
+    }
     public function renderVariationDisplay($atts = [])
     {
         $otherInfo = (array)Arr::get($this->product->detail, 'other_info');

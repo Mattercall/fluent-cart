@@ -34,6 +34,14 @@ const handleTabChange = (newTab) => {
 onMounted(() => {
   isDomReady.value = true
 
+  if (!props.product.detail) {
+    props.product.detail = {};
+  }
+
+  if (!props.product.detail.other_info) {
+    props.product.detail.other_info = {};
+  }
+
   props.productEditModel.getMaxExcerptWordCount();
 
   if (props.product?.post_excerpt !== undefined && props.product?.post_excerpt.toString().length > 0) {
@@ -90,6 +98,20 @@ onMounted(() => {
                 </div>
                 <ValidationError :validation-errors="productEditModel.validationErrors"
                                  field-key="post_excerpt"/>
+              </div>
+            </el-form-item>
+          </div>
+
+          <div class="fct-admin-input-wrapper">
+            <el-form-item :label="translate('Delivery Between (e.g. 3 to 5 days)')">
+              <el-input
+                  :placeholder="translate('e.g. 3 to 5 days')"
+                  type="text"
+                  v-model="product.detail.other_info.delivery_between"
+                  @input="value => {productEditModel.onChangeInputField('delivery_between',value)}"
+              />
+              <div class="form-note">
+                {{ translate('Enter min and max delivery days in a readable format like "3 to 5 days".') }}
               </div>
             </el-form-item>
           </div>
