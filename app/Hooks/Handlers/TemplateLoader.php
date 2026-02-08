@@ -39,7 +39,7 @@ class TemplateLoader
         ?>
         <p class="<?php echo esc_attr(apply_filters('fluent_cart/price_class', 'price')); ?>"><?php echo wp_kses_post($product_detail->getPriceHtml()); ?></p>
         <button type="submit" name="add-to-cart" value="<?php echo esc_attr($product_detail->id); ?>"
-                class="single_add_to_cart_button button alt">Buy Now
+                class="single_add_to_cart_button button alt">Order Now
         </button>
         <?php
     }
