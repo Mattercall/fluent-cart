@@ -436,6 +436,36 @@
 }
 
 
+
+
+.fct-product-info-labels {
+  @apply mt-4 flex flex-col gap-2.5;
+}
+
+.fct-product-info-label {
+  @apply flex items-start gap-2.5 rounded-lg border border-solid px-3.5 py-3 text-sm leading-6;
+  border-color: #dbe3ee;
+  background: #f8fafc;
+  color: #1f2937;
+
+  p {
+    @apply m-0;
+  }
+}
+
+.fct-product-info-label-icon {
+  @apply inline-flex items-center justify-center w-7 h-7 rounded-full text-sm leading-none flex-shrink-0;
+  background: #e9f0ff;
+}
+
+.fct-product-buyer-protection-label {
+  border-color: #d9eadf;
+  background: #f4fbf6;
+
+  .fct-product-info-label-icon {
+    background: #dff4e6;
+  }
+}
 .fct-mobile-sticky-buy-now {
   @apply hidden;
 }
