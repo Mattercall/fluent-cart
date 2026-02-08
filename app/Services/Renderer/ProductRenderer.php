@@ -1053,7 +1053,7 @@ class ProductRenderer
 //        }
 
         $defaults = [
-                'buy_now_text'     => __('Order Now', 'fluent-cart'),
+                'buy_now_text'     => __('Buy Now', 'fluent-cart'),
                 'add_to_cart_text' => __('Add To Cart', 'fluent-cart'),
         ];
 
