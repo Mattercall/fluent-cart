@@ -446,6 +446,10 @@
   }
 }
 
+.fct-mobile-sticky-buy-now-button {
+  @apply hidden;
+}
+
 // responsive breakpoint
 @media (max-width: 900px) {
   .product-info-block-wrapper {
@@ -474,6 +478,20 @@
   }
   .fct-single-product-page {
     @apply px-0;
+  }
+
+  .fct-mobile-sticky-buy-now-button {
+    @apply fixed left-4 right-4 bottom-4 z-[999] text-center justify-center opacity-0 pointer-events-none transition-opacity duration-200;
+
+    &.is-visible {
+      @apply inline-flex opacity-100 pointer-events-auto;
+    }
+  }
+
+  .admin-bar {
+    .fct-mobile-sticky-buy-now-button {
+      bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+    }
   }
 }
 
