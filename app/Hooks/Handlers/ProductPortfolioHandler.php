@@ -69,9 +69,9 @@ class ProductPortfolioHandler
                 .fct-portfolio-dots{display:flex;justify-content:center;gap:6px;margin-top:12px}
                 .fct-portfolio-dot{border:0;height:8px;width:8px;border-radius:999px;background:#cbd5e1;cursor:pointer}
                 .fct-portfolio-dot.is-active{width:22px;background:#111827}
-                .fct-portfolio-modal{position:fixed;inset:0;background:rgba(16,24,40,.55);display:none;align-items:center;justify-content:center;z-index:999999;padding:16px}
+                .fct-portfolio-modal{position:fixed;inset:0;background:rgba(2,6,23,.68);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:999999;padding:16px}
                 .fct-portfolio-modal.is-open{display:flex}
-                .fct-portfolio-modal-inner{background:#fff;border-radius:18px;max-width:920px;width:100%;max-height:90vh;overflow:auto;position:relative;box-shadow:0 22px 60px -38px rgba(2,6,23,.95)}
+                .fct-portfolio-modal-inner{background:#fff;border-radius:18px;max-width:980px;width:100%;max-height:90vh;overflow:auto;position:relative;box-shadow:0 24px 64px -34px rgba(2,6,23,.95)}
                 .fct-portfolio-modal-close{position:absolute;top:14px;right:16px;border:1px solid #d0d5dd;background:#fff;color:#101828;height:34px;width:34px;border-radius:999px;font-size:22px;line-height:1;cursor:pointer;z-index:2}
                 .fct-portfolio-modal-content{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);min-height:100%}
                 .fct-portfolio-modal-gallery{padding:22px;background:#f8fafc;border-right:1px solid #eaecf0}
@@ -120,7 +120,7 @@ class ProductPortfolioHandler
                 </div>
                 <div class="fct-portfolio-dots" data-fct-portfolio-dots></div>
             </div>
-            <div class="fct-portfolio-modal" data-fct-portfolio-modal>
+            <div class="fct-portfolio-modal" data-fct-portfolio-modal role="dialog" aria-modal="true" aria-hidden="true">
                 <div class="fct-portfolio-modal-inner">
                     <button type="button" class="fct-portfolio-modal-close" data-fct-portfolio-close aria-label="<?php echo esc_attr__('Close dialog', 'fluent-cart'); ?>">×</button>
                     <div class="fct-portfolio-modal-content">
@@ -130,7 +130,7 @@ class ProductPortfolioHandler
                         </div>
                         <div class="fct-portfolio-modal-details">
                             <span class="fct-portfolio-modal-eyebrow"><?php echo esc_html__('Client Success Story', 'fluent-cart'); ?></span>
-                            <h3 data-fct-p-title></h3>
+                            <h3 data-fct-p-title tabindex="-1"></h3>
                             <p class="fct-portfolio-summary" data-fct-p-summary></p>
                             <div class="fct-portfolio-modal-meta">
                                 <div class="fct-portfolio-modal-meta-item"><small><?php echo esc_html__('Price range', 'fluent-cart'); ?></small><strong data-fct-p-price></strong></div>
@@ -143,7 +143,7 @@ class ProductPortfolioHandler
             </div>
             <script>
                 (function(){
-                    var root=document.currentScript.previousElementSibling; if(!root){return;}
+                    var root=document.currentScript.closest('.fct-product-portfolio'); if(!root){return;}
                     var slider=root.querySelector('[data-fct-portfolio-slider]');
                     var track=root.querySelector('[data-fct-portfolio-track]');
                     var slides=root.querySelectorAll('.fct-portfolio-slide');
@@ -151,6 +151,8 @@ class ProductPortfolioHandler
                     var modal=root.querySelector('[data-fct-portfolio-modal]');
                     var modalImage=modal.querySelector('[data-fct-p-image]');
                     var modalThumbs=modal.querySelector('[data-fct-p-thumbs]');
+                    var modalTitle=modal.querySelector('[data-fct-p-title]');
+                    var lastFocused=null;
                     var index=0,timer,total=slides.length;
                     if(!track||!total){return;}
                     var update=function(){track.style.transform='translateX(-'+(index*100)+'%)'; dotsWrap.querySelectorAll('.fct-portfolio-dot').forEach(function(d,i){d.classList.toggle('is-active',i===index);});};
@@ -175,7 +177,7 @@ class ProductPortfolioHandler
                             var data={};try{data=JSON.parse(card.getAttribute('data-fct-portfolio')||'{}')}catch(e){}
                             var images=Array.isArray(data.images)?data.images.filter(Boolean):[];
                             if(!images.length&&data.image_url){images=[data.image_url];}
-                            modal.querySelector('[data-fct-p-title]').textContent=data.title||'';
+                            modalTitle.textContent=data.title||'';
                             modal.querySelector('[data-fct-p-summary]').textContent=data.small_description||'';
                             modal.querySelector('[data-fct-p-price]').textContent=data.price_range||'—';
                             modal.querySelector('[data-fct-p-date]').textContent=data.date||'—';
@@ -189,8 +191,11 @@ class ProductPortfolioHandler
                                 setModalImage('');
                                 modalThumbs.innerHTML='';
                             }
+                            lastFocused=document.activeElement;
                             modal.classList.add('is-open');
+                            modal.setAttribute('aria-hidden','false');
                             document.body.style.overflow='hidden';
+                            setTimeout(function(){ modalTitle.focus(); }, 10);
                         });
                     });
                     modalThumbs.addEventListener('click',function(e){
@@ -202,7 +207,12 @@ class ProductPortfolioHandler
                         modalThumbs.querySelectorAll('.fct-portfolio-thumb').forEach(function(item){item.classList.remove('is-active');});
                         thumb.classList.add('is-active');
                     });
-                    var closeModal=function(){modal.classList.remove('is-open');document.body.style.overflow='';};
+                    var closeModal=function(){
+                        modal.classList.remove('is-open');
+                        modal.setAttribute('aria-hidden','true');
+                        document.body.style.overflow='';
+                        if(lastFocused&&typeof lastFocused.focus==='function'){lastFocused.focus();}
+                    };
                     root.querySelector('[data-fct-portfolio-close]').addEventListener('click',closeModal);
                     modal.addEventListener('click',function(e){if(e.target===modal){closeModal();}});
                     document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('is-open')){closeModal();}});
