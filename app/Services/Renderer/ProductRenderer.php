@@ -632,103 +632,63 @@ class ProductRenderer
 
     public function renderPrices()
     {
-        if ($this->product->detail->variation_type === 'simple') {
-            // we have to render for the simple product
-
-            $first_price = $this->product->variants()->first();
-
-            $itemPrice = $first_price ? $first_price->item_price : 0;
-            $comparePrice = $first_price ? $first_price->compare_price : 0;
-            if ($comparePrice <= $itemPrice) {
-                $comparePrice = 0;
-            }
-            do_action('fluent_cart/product/single/before_price_block', [
-                    'product'       => $this->product,
-                    'current_price' => $itemPrice,
-                    'scope'         => 'price_range'
-            ]);
-            ?>
-            <?php
-
-            if ($comparePrice) {
-                $aria_label = sprintf(
-                /* translators: 1: Original price, 2: Current item price */
-                        __('Original Price: %1$s, Price: %2$s', 'fluent-cart'),
-                        Helper::toDecimal($comparePrice),
-                        Helper::toDecimal($itemPrice)
-                );
-            } else {
-                $aria_label = sprintf(
-                /* translators: 1: Current item price */
-                        __('Price: %1$s', 'fluent-cart'),
-                        Helper::toDecimal($itemPrice)
-                );
-            }
-
-            ?>
-            <div class="fct-price-range fct-product-prices" role="term"
-                 aria-label="<?php echo esc_attr($aria_label); ?>">
-
-                <?php if ($comparePrice): ?>
-                    <span class="fct-compare-price">
-                        <del aria-label="<?php echo esc_attr(__('Original price', 'fluent-cart')); ?>"><?php echo esc_html(Helper::toDecimal($comparePrice)); ?></del>
-                    </span>
-                <?php endif; ?>
-                <span class="fct-item-price" aria-label="<?php echo esc_attr(__('Current price', 'fluent-cart')); ?>">
-                    <?php echo esc_html(Helper::toDecimal($itemPrice)); ?>
-                    <?php do_action('fluent_cart/product/after_price', [
-                            'product'       => $this->product,
-                            'current_price' => $itemPrice,
-                            'scope'         => 'price_range'
-                    ]); ?>
-                </span>
-            </div>
-            <?php
-            do_action('fluent_cart/product/single/after_price_block', [
-                    'product'       => $this->product,
-                    'current_price' => $itemPrice,
-                    'scope'         => 'price_range'
-            ]);
+        if ($this->product->detail->variation_type !== 'simple') {
             return;
         }
-        $min_price = $this->product->detail->min_price;
-        $max_price = $this->product->detail->max_price;
 
-        do_action('fluent_cart/product/single/before_price_range_block', [
+        // we have to render for the simple product
+        $first_price = $this->product->variants()->first();
+
+        $itemPrice = $first_price ? $first_price->item_price : 0;
+        $comparePrice = $first_price ? $first_price->compare_price : 0;
+        if ($comparePrice <= $itemPrice) {
+            $comparePrice = 0;
+        }
+        do_action('fluent_cart/product/single/before_price_block', [
                 'product'       => $this->product,
-                'current_price' => $min_price,
+                'current_price' => $itemPrice,
                 'scope'         => 'price_range'
         ]);
         ?>
         <?php
-        $aria_label = sprintf(
-        /* translators: 1: Minimum price, 2: Maximum price */
-                __('Price range: %1$s - %2$s', 'fluent-cart'),
-                Helper::toDecimal($min_price),
-                Helper::toDecimal($max_price)
-        );
+
+        if ($comparePrice) {
+            $aria_label = sprintf(
+            /* translators: 1: Original price, 2: Current item price */
+                    __('Original Price: %1$s, Price: %2$s', 'fluent-cart'),
+                    Helper::toDecimal($comparePrice),
+                    Helper::toDecimal($itemPrice)
+            );
+        } else {
+            $aria_label = sprintf(
+            /* translators: 1: Current item price */
+                    __('Price: %1$s', 'fluent-cart'),
+                    Helper::toDecimal($itemPrice)
+            );
+        }
+
         ?>
-        <div class="fct-product-prices fct-price-range" role="term" aria-label="<?php echo esc_attr($aria_label); ?>">
+        <div class="fct-price-range fct-product-prices" role="term"
+             aria-label="<?php echo esc_attr($aria_label); ?>">
 
-            <?php if ($max_price && $max_price != $min_price && $max_price > $min_price): ?>
-                <span class="fct-min-price"><?php echo esc_html(Helper::toDecimal($min_price)); ?></span>
-                <span class="fct-price-separator" aria-hidden="true">-</span>
+            <?php if ($comparePrice): ?>
+                <span class="fct-compare-price">
+                    <del aria-label="<?php echo esc_attr(__('Original price', 'fluent-cart')); ?>"><?php echo esc_html(Helper::toDecimal($comparePrice)); ?></del>
+                </span>
             <?php endif; ?>
-            <span class="fct-max-price">
-                <?php echo esc_html(Helper::toDecimal($max_price)); ?>
+            <span class="fct-item-price" aria-label="<?php echo esc_attr(__('Current price', 'fluent-cart')); ?>">
+                <?php echo esc_html(Helper::toDecimal($itemPrice)); ?>
+                <?php do_action('fluent_cart/product/after_price', [
+                        'product'       => $this->product,
+                        'current_price' => $itemPrice,
+                        'scope'         => 'price_range'
+                ]); ?>
             </span>
-
-            <?php do_action('fluent_cart/product/after_price', [
-                    'product'       => $this->product,
-                    'current_price' => $min_price,
-                    'scope'         => 'price_range'
-            ]); ?>
-
         </div>
         <?php
-        do_action('fluent_cart/product/single/after_price_range_block', [
+        do_action('fluent_cart/product/single/after_price_block', [
                 'product'       => $this->product,
-                'current_price' => $min_price,
+                'current_price' => $itemPrice,
                 'scope'         => 'price_range'
         ]);
     }
@@ -1074,6 +1034,7 @@ class ProductRenderer
         $buyNowAttributes = [
                 'data-fluent-cart-direct-checkout-button' => '',
                 'data-variation-type'                     => $this->product->detail->variation_type,
+                'data-buy-now-text'                       => wp_strip_all_tags($buyButtonText),
                 'class'                                   => $variationClass,
                 'data-stock-availability'                 => $stockStatus,
                 'data-quantity'                           => '1',

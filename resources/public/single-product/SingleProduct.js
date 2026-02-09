@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         #stickyBuyNowWrap;
         #primaryBuyNowButton;
         #buyNowButtonObserver;
+        #defaultBuyNowText = '';
 
         toTitleCase(str) {
             return str.replace(
@@ -65,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.#buyNowButtons = this.findInContainer('[data-fluent-cart-direct-checkout-button]');
             this.#stickyBuyNowWrap = this.findOneInContainer('[data-fluent-cart-mobile-sticky-buy-now]');
             this.#primaryBuyNowButton = this.findOneInContainer('.fct-product-buttons-wrap [data-fluent-cart-direct-checkout-button]');
+            this.#defaultBuyNowText = this.#buyNowButtons[0]?.dataset.buyNowText || this.#buyNowButtons[0]?.textContent?.trim() || '';
             this.#thumbnailControls = this.findInContainer('[data-fluent-cart-thumb-control-button]');
             this.#thumbnailControlsWrapper = this.findOneInContainer('[data-fluent-cart-single-product-page-product-thumbnail-controls]');
             this.#itemPrice = this.findOneInContainer('[data-fluent-cart-product-item-price]');
@@ -188,6 +190,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const subscriptionTerms = activeVariationButton?.dataset.subscriptionTerms;
             const activeVariantPaymentType = activeVariationButton?.dataset.paymentType;
             // const stockStatus = activeVariationButton?.dataset.itemStock;
+
+            this.#updateBuyNowButtonText(activeVariationButton?.dataset.itemPrice);
 
             let checkStockStatus = window.fluentcart_single_product_vars?.in_stock_status;
             let stockManagement = activeVariationButton?.dataset.stockManagement;
@@ -317,6 +321,16 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        #updateBuyNowButtonText(price = '') {
+            const labelText = this.#defaultBuyNowText || 'Order Now';
+            const formattedText = price ? `${labelText} (${price})` : labelText;
+
+            this.#buyNowButtons.forEach(button => {
+                button.textContent = formattedText;
+                button.setAttribute('aria-label', formattedText);
+            });
+        }
+
         #setupVariationButtons() {
             this.#variationButtons.forEach(button => {
                 button.addEventListener('click', (event) => {
@@ -338,6 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             this.#resetQuantity();
             const variationId = button.dataset.cartId;
+            this.#updateBuyNowButtonText(button.dataset.itemPrice);
 
             // get parent data-fluent-cart-product-pricing-section
             const pricingSection = button.closest('[data-fluent-cart-product-pricing-section]');
