@@ -102,7 +102,7 @@ class ProductPortfolioHandler
                         <div class="fct-portfolio-slide">
                             <div class="fct-portfolio-grid">
                                 <?php foreach ($slide as $item): ?>
-                                    <article class="fct-portfolio-card" data-fct-portfolio='<?php echo wp_json_encode($item); ?>'>
+                                    <article class="fct-portfolio-card" data-fct-portfolio="<?php echo esc_attr(wp_json_encode($item)); ?>">
                                         <?php $coverImage = !empty($item['images']) ? $item['images'][0] : $item['image_url']; ?>
                                         <?php if (!empty($coverImage)): ?><img src="<?php echo esc_url($coverImage); ?>" alt="<?php echo esc_attr($item['title']); ?>"/><?php endif; ?>
                                         <h4><?php echo esc_html($item['title']); ?></h4>
