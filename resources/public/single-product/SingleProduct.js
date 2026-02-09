@@ -191,8 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const activeVariantPaymentType = activeVariationButton?.dataset.paymentType;
             // const stockStatus = activeVariationButton?.dataset.itemStock;
 
-            const activeVariationPrice = this.#getVariationPrice(this.#pricingSection, cartId, activeVariationButton?.dataset.itemPrice);
-            this.#updateBuyNowButtonText(activeVariationPrice);
+            this.#updateBuyNowButtonText(activeVariationButton?.dataset.itemPrice);
 
             let checkStockStatus = window.fluentcart_single_product_vars?.in_stock_status;
             let stockManagement = activeVariationButton?.dataset.stockManagement;
@@ -332,25 +331,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        #getVariationPrice(pricingSection, variationId, fallbackPrice = '') {
-            if (!pricingSection || !variationId) {
-                return fallbackPrice;
-            }
-
-            const priceElement = pricingSection.querySelector(
-                `.fct-product-item-price.fluent-cart-product-variation-content[data-variation-id="${variationId}"]`
-            );
-
-            if (!priceElement) {
-                return fallbackPrice;
-            }
-
-            const comparePriceText = priceElement.querySelector('.fct-compare-price')?.textContent?.trim() || '';
-            const priceText = priceElement.textContent?.replace(comparePriceText, '').replace(/\s+/g, ' ').trim() || '';
-
-            return priceText || fallbackPrice;
-        }
-
         #setupVariationButtons() {
             this.#variationButtons.forEach(button => {
                 button.addEventListener('click', (event) => {
@@ -372,11 +352,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             this.#resetQuantity();
             const variationId = button.dataset.cartId;
+            this.#updateBuyNowButtonText(button.dataset.itemPrice);
 
             // get parent data-fluent-cart-product-pricing-section
             const pricingSection = button.closest('[data-fluent-cart-product-pricing-section]');
-            const selectedVariationPrice = this.#getVariationPrice(pricingSection, variationId, button.dataset.itemPrice);
-            this.#updateBuyNowButtonText(selectedVariationPrice);
             // get data-fluent-cart-product-payment-type from pricingSection and add class is-hidden to all
             const paymentTypes = pricingSection.querySelectorAll('[data-fluent-cart-product-payment-type]');
             const itemPrices = pricingSection.querySelectorAll('[data-fluent-cart-product-item-price]');
