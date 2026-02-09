@@ -382,13 +382,6 @@
 /*=== item price ===*/
 .fct-product-item-price{
   @apply text-lg text-[var(--fct-single-product-primary-text-color)] mt-5;
-
-  // Variation price is rendered inside the Buy Now button label.
-  // Keep this block hidden so the same value is not duplicated above the CTA.
-  &[data-fluent-cart-product-item-price]{
-    @apply hidden;
-  }
-
   &.is-hidden{
     @apply hidden;
   }
