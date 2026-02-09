@@ -183,7 +183,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         #setup() {
-            const activeVariationButton = this.findOneInContainer('.selected[data-fluent-cart-product-variant]');
+            const activeVariationButton = this.findOneInContainer('.selected[data-fluent-cart-product-variant]')
+                || this.#variationButtons[0]
+                || null;
 
             const cartId = activeVariationButton?.dataset.cartId;
             const itemPrice = activeVariationButton?.dataset.itemPrice;
