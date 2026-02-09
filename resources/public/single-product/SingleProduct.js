@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const activeVariantPaymentType = activeVariationButton?.dataset.paymentType;
             // const stockStatus = activeVariationButton?.dataset.itemStock;
 
-            this.#updateBuyNowButtonText(activeVariationButton?.dataset.itemPrice);
+            this.#updateBuyNowButtonText(this.#getSelectedVariationPrice(activeVariationButton));
 
             let checkStockStatus = window.fluentcart_single_product_vars?.in_stock_status;
             let stockManagement = activeVariationButton?.dataset.stockManagement;
@@ -331,6 +331,28 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        #getSelectedVariationPrice(variationButton = null, variationId = '') {
+            const buttonPrice = variationButton?.dataset?.itemPrice?.trim();
+            if (buttonPrice) {
+                return buttonPrice;
+            }
+
+            if (!this.#pricingSection) {
+                return '';
+            }
+
+            const selectedVariationId = variationId || variationButton?.dataset?.cartId;
+            if (!selectedVariationId) {
+                return '';
+            }
+
+            const selectedPriceElement = this.#pricingSection.querySelector(
+                `.fct-product-item-price.fluent-cart-product-variation-content[data-variation-id="${selectedVariationId}"]`
+            );
+
+            return selectedPriceElement?.textContent?.trim() || '';
+        }
+
         #setupVariationButtons() {
             this.#variationButtons.forEach(button => {
                 button.addEventListener('click', (event) => {
@@ -352,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             this.#resetQuantity();
             const variationId = button.dataset.cartId;
-            this.#updateBuyNowButtonText(button.dataset.itemPrice);
+            this.#updateBuyNowButtonText(this.#getSelectedVariationPrice(button, variationId));
 
             // get parent data-fluent-cart-product-pricing-section
             const pricingSection = button.closest('[data-fluent-cart-product-pricing-section]');
