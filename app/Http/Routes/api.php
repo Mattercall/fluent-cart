@@ -26,6 +26,7 @@ use FluentCart\App\Http\Controllers\ProductFaqController;
 use FluentCart\App\Http\Controllers\ProductDownloadablesController;
 use FluentCart\App\Http\Controllers\ProductIntegrationsController;
 use FluentCart\App\Http\Controllers\ProductPromotionalSectionController;
+use FluentCart\App\Http\Controllers\ProductPortfolioController;
 use FluentCart\App\Http\Controllers\ProductVariationController;
 use FluentCart\App\Http\Controllers\StorageController;
 use FluentCart\App\Http\Controllers\SettingsController;
@@ -436,6 +437,23 @@ $router->prefix('settings/')
             'permissions' => 'is_super_admin'
         ]);
 
+
+
+        $router->get('product-portfolio', [ProductPortfolioController::class, 'index'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->post('product-portfolio', [ProductPortfolioController::class, 'store'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->post('product-portfolio/{id}', [ProductPortfolioController::class, 'update'])->int('id')->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->delete('product-portfolio/{id}', [ProductPortfolioController::class, 'delete'])->int('id')->meta([
+            'permissions' => 'is_super_admin'
+        ]);
+        $router->get('product-portfolio/products', [ProductPortfolioController::class, 'products'])->meta([
+            'permissions' => 'is_super_admin'
+        ]);
 
         $router->get('promotional-section/products', [ProductPromotionalSectionController::class, 'products'])->meta([
             'permissions' => 'is_super_admin'

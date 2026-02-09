@@ -123,6 +123,14 @@ const routes = ref([
     url: '/settings/customer-reviews'
   },
 
+
+  {
+    name: translate("Portfolio"),
+    icon: "Module",
+    permission: ["is_super_admin"],
+    url: '/settings/product-portfolio'
+  },
+
   {
     name: translate("Product FAQs"),
     icon: "Question",
