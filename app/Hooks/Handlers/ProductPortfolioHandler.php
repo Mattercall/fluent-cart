@@ -53,8 +53,9 @@ class ProductPortfolioHandler
         <section class="fct-product-portfolio" aria-label="<?php echo esc_attr__('Client Success Stories', 'fluent-cart'); ?>">
             <style>
                 .fct-product-portfolio{margin:30px 0 0;padding:24px;border:1px solid #e4e7ec;border-radius:16px;background:#fff;box-shadow:0 10px 35px -30px rgba(15,23,42,.4)}
+                .fct-portfolio-heading{max-width:740px;margin:0 auto 18px;text-align:center}
                 .fct-portfolio-title{margin:0 0 6px;font-size:28px;font-weight:700;color:#101828}
-                .fct-portfolio-subtitle{margin:0 0 18px;color:#667085;font-size:15px;line-height:1.5}
+                .fct-portfolio-subtitle{margin:0;color:#667085;font-size:15px;line-height:1.5}
                 .fct-portfolio-slider{position:relative;overflow:hidden}
                 .fct-portfolio-track{display:flex;transition:transform .45s ease}
                 .fct-portfolio-slide{min-width:100%;width:100%}
@@ -92,17 +93,24 @@ class ProductPortfolioHandler
                 .fct-portfolio-modal-body p:first-child{margin-top:0}
                 @media (max-width:991px){.fct-portfolio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
                 @media (max-width:860px){.fct-portfolio-modal-content{grid-template-columns:1fr}.fct-portfolio-modal-gallery{border-right:0;border-bottom:1px solid #eaecf0}.fct-portfolio-main-image{max-height:300px}}
-                @media (max-width:640px){.fct-portfolio-grid{grid-template-columns:1fr}.fct-product-portfolio{padding:18px}.fct-portfolio-title{font-size:22px}.fct-portfolio-modal-meta{grid-template-columns:1fr}.fct-portfolio-modal-details{padding:20px}}
+                @media (max-width:640px){.fct-portfolio-grid{grid-template-columns:1fr}.fct-product-portfolio{padding:18px}.fct-portfolio-title{font-size:22px}.fct-portfolio-modal-meta{grid-template-columns:1fr}.fct-portfolio-modal-details{padding:20px}.fct-portfolio-heading{text-align:left;margin-bottom:16px}}
             </style>
-            <h3 class="fct-portfolio-title"><?php echo esc_html__('Client Success Stories', 'fluent-cart'); ?></h3>
-            <p class="fct-portfolio-subtitle"><?php echo esc_html__('Explore recent client projects, outcomes, budgets, and implementation details.', 'fluent-cart'); ?></p>
+            <div class="fct-portfolio-heading">
+                <h3 class="fct-portfolio-title"><?php echo esc_html__('Client Success Stories', 'fluent-cart'); ?></h3>
+                <p class="fct-portfolio-subtitle"><?php echo esc_html__('Explore recent client projects, outcomes, budgets, and implementation details.', 'fluent-cart'); ?></p>
+            </div>
             <div class="fct-portfolio-slider" data-fct-portfolio-slider>
                 <div class="fct-portfolio-track" data-fct-portfolio-track>
                     <?php foreach ($pages as $slide): ?>
                         <div class="fct-portfolio-slide">
                             <div class="fct-portfolio-grid">
                                 <?php foreach ($slide as $item): ?>
-                                    <article class="fct-portfolio-card" data-fct-portfolio='<?php echo wp_json_encode($item); ?>'>
+                                    <article
+                                        class="fct-portfolio-card"
+                                        role="button"
+                                        tabindex="0"
+                                        data-fct-portfolio="<?php echo esc_attr(wp_json_encode($item, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_HEX_TAG)); ?>"
+                                    >
                                         <?php $coverImage = !empty($item['images']) ? $item['images'][0] : $item['image_url']; ?>
                                         <?php if (!empty($coverImage)): ?><img src="<?php echo esc_url($coverImage); ?>" alt="<?php echo esc_attr($item['title']); ?>"/><?php endif; ?>
                                         <h4><?php echo esc_html($item['title']); ?></h4>
@@ -133,7 +141,7 @@ class ProductPortfolioHandler
                             <h3 data-fct-p-title></h3>
                             <p class="fct-portfolio-summary" data-fct-p-summary></p>
                             <div class="fct-portfolio-modal-meta">
-                                <div class="fct-portfolio-modal-meta-item"><small><?php echo esc_html__('Price range', 'fluent-cart'); ?></small><strong data-fct-p-price></strong></div>
+                                <div class="fct-portfolio-modal-meta-item"><small><?php echo esc_html__('Budget / Price range', 'fluent-cart'); ?></small><strong data-fct-p-price></strong></div>
                                 <div class="fct-portfolio-modal-meta-item"><small><?php echo esc_html__('Project date', 'fluent-cart'); ?></small><strong data-fct-p-date></strong></div>
                             </div>
                             <div class="fct-portfolio-modal-body" data-fct-p-full></div>
@@ -171,12 +179,12 @@ class ProductPortfolioHandler
                         modalImage.src=url;modalImage.style.display='block';
                     };
                     root.querySelectorAll('.fct-portfolio-card').forEach(function(card){
-                        card.addEventListener('click',function(){
+                        var openModal=function(){
                             var data={};try{data=JSON.parse(card.getAttribute('data-fct-portfolio')||'{}')}catch(e){}
                             var images=Array.isArray(data.images)?data.images.filter(Boolean):[];
                             if(!images.length&&data.image_url){images=[data.image_url];}
                             modal.querySelector('[data-fct-p-title]').textContent=data.title||'';
-                            modal.querySelector('[data-fct-p-summary]').textContent=data.small_description||'';
+                            modal.querySelector('[data-fct-p-summary]').textContent=data.small_description||data.full_description||'';
                             modal.querySelector('[data-fct-p-price]').textContent=data.price_range||'—';
                             modal.querySelector('[data-fct-p-date]').textContent=data.date||'—';
                             modal.querySelector('[data-fct-p-full]').innerHTML=(data.full_description||'').trim() ? data.full_description : '<p>'+escapeHtml('<?php echo esc_js(__('No additional details provided.', 'fluent-cart')); ?>')+'</p>';
@@ -191,6 +199,13 @@ class ProductPortfolioHandler
                             }
                             modal.classList.add('is-open');
                             document.body.style.overflow='hidden';
+                        };
+                        card.addEventListener('click',openModal);
+                        card.addEventListener('keydown',function(e){
+                            if(e.key==='Enter'||e.key===' '){
+                                e.preventDefault();
+                                openModal();
+                            }
                         });
                     });
                     modalThumbs.addEventListener('click',function(e){
