@@ -53,8 +53,8 @@ class ProductPortfolioHandler
         <section class="fct-product-portfolio" aria-label="<?php echo esc_attr__('Client Success Stories', 'fluent-cart'); ?>">
             <style>
                 .fct-product-portfolio{margin:30px 0 0;padding:24px;border:1px solid #e4e7ec;border-radius:16px;background:#fff;box-shadow:0 10px 35px -30px rgba(15,23,42,.4)}
-                .fct-portfolio-title{margin:0 0 6px;font-size:28px;font-weight:700;color:#101828}
-                .fct-portfolio-subtitle{margin:0 0 18px;color:#667085;font-size:15px;line-height:1.5}
+                .fct-portfolio-title{margin:0 0 6px;font-size:28px;font-weight:700;color:#101828;text-align:center}
+                .fct-portfolio-subtitle{margin:0 0 18px;color:#667085;font-size:15px;line-height:1.5;text-align:center;max-width:760px;margin-left:auto;margin-right:auto}
                 .fct-portfolio-slider{position:relative;overflow:hidden}
                 .fct-portfolio-track{display:flex;transition:transform .45s ease}
                 .fct-portfolio-slide{min-width:100%;width:100%}
@@ -66,13 +66,12 @@ class ProductPortfolioHandler
                 .fct-portfolio-card p{margin:0;color:#475467;font-size:14px;line-height:1.45}
                 .fct-portfolio-meta{font-size:13px;color:#667085;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
                 .fct-portfolio-open{margin-top:auto;color:#344054;font-size:12px;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
-                .fct-portfolio-dots{display:flex;justify-content:center;gap:6px;margin-top:12px}
-                .fct-portfolio-dot{border:0;height:8px;width:8px;border-radius:999px;background:#cbd5e1;cursor:pointer}
-                .fct-portfolio-dot.is-active{width:22px;background:#111827}
                 .fct-portfolio-modal{position:fixed;inset:0;background:rgba(2,6,23,.68);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:999999;padding:16px}
                 .fct-portfolio-modal.is-open{display:flex}
                 .fct-portfolio-modal-inner{background:#fff;border-radius:18px;max-width:980px;width:100%;max-height:90vh;overflow:auto;position:relative;box-shadow:0 24px 64px -34px rgba(2,6,23,.95)}
-                .fct-portfolio-modal-close{position:absolute;top:14px;right:16px;border:1px solid #d0d5dd;background:#fff;color:#101828;height:34px;width:34px;border-radius:999px;font-size:22px;line-height:1;cursor:pointer;z-index:2}
+                .fct-portfolio-modal-header{display:flex;justify-content:flex-end;padding:16px 16px 0}
+                .fct-portfolio-modal-close{display:inline-flex;align-items:center;justify-content:center;border:1px solid #d0d5dd;background:#fff;color:#101828;height:34px;width:34px;border-radius:999px;font-size:22px;line-height:1;cursor:pointer;transition:all .2s ease}
+                .fct-portfolio-modal-close:hover{background:#f8fafc;border-color:#98a2b3}
                 .fct-portfolio-modal-content{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);min-height:100%}
                 .fct-portfolio-modal-gallery{padding:22px;background:#f8fafc;border-right:1px solid #eaecf0}
                 .fct-portfolio-main-image{width:100%;max-height:360px;object-fit:cover;border-radius:12px;background:#e4e7ec}
@@ -91,7 +90,7 @@ class ProductPortfolioHandler
                 .fct-portfolio-modal-body{color:#1f2937;line-height:1.62;font-size:15px}
                 .fct-portfolio-modal-body p:first-child{margin-top:0}
                 @media (max-width:991px){.fct-portfolio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-                @media (max-width:860px){.fct-portfolio-modal-content{grid-template-columns:1fr}.fct-portfolio-modal-gallery{border-right:0;border-bottom:1px solid #eaecf0}.fct-portfolio-main-image{max-height:300px}}
+                @media (max-width:860px){.fct-portfolio-modal{padding:12px}.fct-portfolio-modal-inner{max-height:94vh}.fct-portfolio-modal-content{grid-template-columns:1fr}.fct-portfolio-modal-gallery{border-right:0;border-bottom:1px solid #eaecf0}.fct-portfolio-main-image{max-height:300px}}
                 @media (max-width:640px){.fct-portfolio-grid{grid-template-columns:1fr}.fct-product-portfolio{padding:18px}.fct-portfolio-title{font-size:22px}.fct-portfolio-modal-meta{grid-template-columns:1fr}.fct-portfolio-modal-details{padding:20px}}
             </style>
             <h3 class="fct-portfolio-title"><?php echo esc_html__('Client Success Stories', 'fluent-cart'); ?></h3>
@@ -118,11 +117,12 @@ class ProductPortfolioHandler
                         </div>
                     <?php endforeach; ?>
                 </div>
-                <div class="fct-portfolio-dots" data-fct-portfolio-dots></div>
             </div>
             <div class="fct-portfolio-modal" data-fct-portfolio-modal role="dialog" aria-modal="true" aria-hidden="true">
                 <div class="fct-portfolio-modal-inner">
-                    <button type="button" class="fct-portfolio-modal-close" data-fct-portfolio-close aria-label="<?php echo esc_attr__('Close dialog', 'fluent-cart'); ?>">×</button>
+                    <div class="fct-portfolio-modal-header">
+                        <button type="button" class="fct-portfolio-modal-close" data-fct-portfolio-close aria-label="<?php echo esc_attr__('Close dialog', 'fluent-cart'); ?>">×</button>
+                    </div>
                     <div class="fct-portfolio-modal-content">
                         <div class="fct-portfolio-modal-gallery">
                             <img class="fct-portfolio-main-image" data-fct-p-image src="" alt="" style="display:none"/>
@@ -147,7 +147,6 @@ class ProductPortfolioHandler
                     var slider=root.querySelector('[data-fct-portfolio-slider]');
                     var track=root.querySelector('[data-fct-portfolio-track]');
                     var slides=root.querySelectorAll('.fct-portfolio-slide');
-                    var dotsWrap=root.querySelector('[data-fct-portfolio-dots]');
                     var modal=root.querySelector('[data-fct-portfolio-modal]');
                     var modalImage=modal.querySelector('[data-fct-p-image]');
                     var modalThumbs=modal.querySelector('[data-fct-p-thumbs]');
@@ -155,12 +154,10 @@ class ProductPortfolioHandler
                     var lastFocused=null;
                     var index=0,timer,total=slides.length;
                     if(!track||!total){return;}
-                    var update=function(){track.style.transform='translateX(-'+(index*100)+'%)'; dotsWrap.querySelectorAll('.fct-portfolio-dot').forEach(function(d,i){d.classList.toggle('is-active',i===index);});};
+                    var update=function(){track.style.transform='translateX(-'+(index*100)+'%)';};
                     var go=function(i){index=(i+total)%total;update();};
-                    var initDots=function(){var h='';for(var i=0;i<total;i++){h+='<button type="button" class="fct-portfolio-dot'+(i===0?' is-active':'')+'" data-i="'+i+'"></button>';} dotsWrap.innerHTML=h;};
                     var restart=function(){if(timer){clearInterval(timer);} if(total>1){timer=setInterval(function(){go(index+1)},4500);}};
-                    initDots(); update(); restart();
-                    dotsWrap.addEventListener('click',function(e){var dot=e.target.closest('[data-i]');if(!dot){return;} go(parseInt(dot.getAttribute('data-i'),10)); restart();});
+                    update(); restart();
                     slider.addEventListener('mouseenter',function(){if(timer){clearInterval(timer);}});
                     slider.addEventListener('mouseleave',restart);
                     var escapeHtml=function(value){
