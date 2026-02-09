@@ -24,6 +24,7 @@ use FluentCart\Framework\Support\Arr;
 (new \FluentCart\App\CPT\FluentProducts)->register();
 (new \FluentCart\App\CPT\CustomerReview)->register();
 (new \FluentCart\App\CPT\ProductFaq)->register();
+(new \FluentCart\App\CPT\ProductPortfolio)->register();
 (new \FluentCart\App\Services\Email\EmailNotificationMailer)->register();
 (new \FluentCart\App\Hooks\Handlers\CPTHandler)->register();
 (new \FluentCart\App\Hooks\Handlers\MenuHandler)->register();
@@ -32,6 +33,7 @@ use FluentCart\Framework\Support\Arr;
 (new \FluentCart\App\Hooks\Handlers\RetentionSnapshotHandler)->register();
 (new \FluentCart\App\Hooks\Handlers\CustomerReviewHandler)->register();
 (new \FluentCart\App\Hooks\Handlers\ProductFaqHandler)->register();
+(new \FluentCart\App\Hooks\Handlers\ProductPortfolioHandler)->register();
 (new \FluentCart\App\Hooks\Handlers\ProductPromotionalSectionHandler)->register();
 
 (new \FluentCart\App\Hooks\Handlers\ShortCodes\ShopAppHandler)->register();

@@ -64,6 +64,7 @@ import CheckoutFields from "@/Modules/Settings/CheckoutFields.vue";
 import CustomerReviews from "@/Modules/Settings/CustomerReviews.vue";
 import ProductFaqs from "@/Modules/Settings/ProductFaqs.vue";
 import ProductPromotionalSection from "@/Modules/Settings/ProductPromotionalSection.vue";
+import ProductPortfolio from "@/Modules/Settings/ProductPortfolio.vue";
 import AppConfig from "@/utils/Config/AppConfig";
 
 
@@ -538,6 +539,18 @@ export var routes = {
                 meta: {
                     active_menu: 'settings',
                     title: 'Product FAQs',
+                    permission: "is_super_admin"
+                },
+            },
+
+
+            {
+                name: 'product_portfolio',
+                path: 'product-portfolio',
+                component: ProductPortfolio,
+                meta: {
+                    active_menu: 'settings',
+                    title: 'Portfolio',
                     permission: "is_super_admin"
                 },
             },
